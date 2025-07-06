@@ -1,0 +1,6 @@
+@Jotem.Api.WebApi_HostAddress = http://localhost:5146
+
+GET {{Jotem.Api.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

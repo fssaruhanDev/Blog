@@ -1,0 +1,32 @@
+# 1) Uygulamanýzý çalýþtýracak (runtime) taban imaj
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# 2) Derleme aþamasý (SDK imajý)
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+# Proje dosyasýný kopyalayýp restore yap
+COPY ["src/Api/WebAPI/Jotem.Api.WebApi/Jotem.Api.WebApi.csproj", "src/Api/WebAPI/Jotem.Api.WebApi/"]
+RUN dotnet restore "./src/Api/WebAPI/Jotem.Api.WebApi/Jotem.Api.WebApi.csproj"
+
+# Geri kalan tüm kodlarý kopyala
+COPY . .
+
+# Derleme
+WORKDIR "/src/src/Api/WebAPI/Jotem.Api.WebApi"
+RUN dotnet build "Jotem.Api.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# 3) Publish aþamasý
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "Jotem.Api.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# 4) Final aþamasý (çalýþan imaj)
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Jotem.Api.WebApi.dll"]
