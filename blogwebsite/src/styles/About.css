@@ -1,0 +1,55 @@
+.about-section {
+  padding: 4rem 2rem;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.about-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* bu zaten hizayı üstte tutar */
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 3rem;
+  width: 100%;
+}
+
+.about-content {
+  flex: 1;
+  max-width: 100%;
+  margin-top: 0;       /* ← bu satır önemli */
+  padding-top: 0;      /* ← bu da */
+}
+
+.about-image {
+  flex: 0 0 400px;
+  align-self: center;
+}
+
+.about-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.about-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.about-content h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #bbbbbb;
+}
+
+.about-content p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #e0e0e0;
+  margin-bottom: 1.2rem;
+}

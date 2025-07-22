@@ -1,0 +1,35 @@
+.projects-section {
+  padding: 40px;
+}
+
+.project-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 40px;
+}
+
+.project-title {
+  width: 25%;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.project-info {
+  width: 75%;
+}
+
+.project-info .description {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.project-info ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.project-info li {
+  margin-bottom: 6px;
+  color: #dcdcdc;
+}
