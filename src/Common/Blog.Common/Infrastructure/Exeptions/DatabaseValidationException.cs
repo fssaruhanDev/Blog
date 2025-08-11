@@ -21,9 +21,6 @@ namespace Blog.Infrastructure.Persistence.Exeptions;
             ErrorMessage = message;
         }
 
-        protected DatabaseValidationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+        // Removed obsolete serialization constructor.
     }
 

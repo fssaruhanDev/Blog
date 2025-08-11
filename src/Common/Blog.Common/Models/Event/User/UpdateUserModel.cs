@@ -10,7 +10,7 @@ namespace Blog.Common.Models.Event.User
     {
 
         public Guid UserID { get; set; }
-        public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
 
     }
 }

@@ -33,7 +33,7 @@ public interface IGenericRepository<T> where T: BaseEntity
 
 
 
-    Task<List<T>> GetList(Expression<Func<T, bool>> predicate, bool noTracking = true, Func<IQueryable<T>,IOrderedQueryable<T>> orderBy = null, params Expression<Func<T, object>>[] includes);
+    Task<List<T>> GetList(Expression<Func<T, bool>> predicate, bool noTracking = true, Func<IQueryable<T>,IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object>>[] includes);
 
     Task<T> GetByIdAsync(Guid id, bool noTracking = true, params Expression<Func<T, object>>[] includes);
 

@@ -20,7 +20,8 @@ public class TokenService : IJwtProvider
 
     public string GenerateToken(Claim[] claims, DateTime expiresAt)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Token:SecurityKey"]));
+    var securityKey = configuration["Token:SecurityKey"] ?? throw new InvalidOperationException("Token:SecurityKey is not configured.");
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(claims: claims,
                                         expires: expiresAt,

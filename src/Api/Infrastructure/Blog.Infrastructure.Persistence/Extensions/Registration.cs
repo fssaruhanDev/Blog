@@ -13,37 +13,30 @@ namespace Blog.Infrastructure.Persistence.Extensions;
 public static class Registration
 {
 
-    public static IServiceCollection AddInfastructureRegistration(this IServiceCollection services,IConfiguration configuration)
+	public static IServiceCollection AddInfastructureRegistration(this IServiceCollection services,IConfiguration configuration)
 	{
-
-		services.AddDbContext<EntityContext>(conf =>
-		{
-
-			var connectionString = configuration["ConnectionStrings:ConnectionString"];
-
-			conf.UseSqlServer(connectionString, x =>
-			{
-				x.EnableRetryOnFailure();
-			});
-
-		});
 
 		//var SeedData = new SeedData();
 
 		//SeedData.SeedAsync(configuration).GetAwaiter().GetResult();
 
-		services.AddScoped<IUserRepository, UserRepository>();
+	services.AddScoped<IUserRepository, UserRepository>();
+	services.AddScoped(typeof(IGenericRepository<>), typeof(Blog.Infrastructure.Persistence.Repostory.GenericRepository<>));
+		// Map DbContext -> EntityContext for repositories expecting DbContext
+		services.AddScoped<DbContext>(sp => sp.GetRequiredService<EntityContext>());
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<SavingChangesInterceptor>();
 
+		// DbContext registration: configure provider and add interceptor
+		services.AddDbContext<EntityContext>((serviceProvider, optionsBuilder) =>
+		{
+			var connectionString = configuration["ConnectionStrings:ConnectionString"];
+			optionsBuilder.UseSqlServer(connectionString, x => x.EnableRetryOnFailure());
 
-        // DbContext için interceptor ekleniyor
-        services.AddDbContext<EntityContext>((serviceProvider, optionsBuilder) =>
-        {
-            var interceptor = serviceProvider.GetRequiredService<SavingChangesInterceptor>();
-            optionsBuilder.AddInterceptors(interceptor);
-        });
+			var interceptor = serviceProvider.GetRequiredService<SavingChangesInterceptor>();
+			optionsBuilder.AddInterceptors(interceptor);
+		});
         return services;
 	}
 }

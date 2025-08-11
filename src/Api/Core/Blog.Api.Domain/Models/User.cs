@@ -3,15 +3,15 @@ namespace Blog.Api.Domain.Models
 {
 	public class User : BaseEntity
 	{
-		public string FirstName { get; set; }
-		public string LastName { get; set; }
+		public required string FirstName { get; set; }
+		public required string LastName { get; set; }
         public string? Avatar { get; set; }
 
-        public string EmailAddress { get; set; }
+        public required string EmailAddress { get; set; }
 		public bool EmailConfirmed { get; set; }
 
-		public string UserName { get; set; }
-		public string Password { get; set; }
+		public required string UserName { get; set; }
+		public required string Password { get; set; }
 
     }
 }

@@ -1,0 +1,2 @@
+// TipTap removed
+export default {};

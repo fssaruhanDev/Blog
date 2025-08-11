@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github-dark.css'; // Alternatif tema kullanabilirsin
-import blogPosts from './data/BlogData';
+import 'highlight.js/styles/github-dark.css';
+import blogPosts from './data/BlogData'; // fallback static
+import { getPost } from '../../services/api';
 import "../../styles/BlogDetails.css";
 
 const BlogDetails = () => {
@@ -13,8 +14,30 @@ const BlogDetails = () => {
   const [newComment, setNewComment] = useState('');
 
   useEffect(() => {
-    const foundPost = blogPosts.find((p) => p.id === parseInt(id));
-    setPost(foundPost);
+    let cancelled = false;
+    async function load() {
+      // Try backend
+      try {
+        const resp = await getPost(id);
+        if (!cancelled && resp) {
+          setPost({
+            id: resp.id || resp.ID,
+            title: resp.title || resp.Title,
+            content: resp.content || resp.Content || resp.excerpt || resp.Excerpt,
+            date: (resp.publishedAt || resp.PublishedAt || resp.createdDate || resp.CreatedDate || '').toString().substring(0,10),
+            image: resp.coverImage || resp.CoverImage || '/images/BlogExample.png'
+          });
+          return;
+        }
+      } catch (e) {
+        // fallback uses local static list
+      }
+      // Fallback static list
+      const foundPost = blogPosts.find((p) => p.id === parseInt(id));
+      if (!cancelled) setPost(foundPost || null);
+    }
+    load();
+    return () => { cancelled = true; };
   }, [id]);
 
   const handleAddComment = () => {
@@ -34,7 +57,7 @@ const BlogDetails = () => {
 
   return (
     <div className="blog-details-container">
-      <img src={post.image} alt={post.title} className="blog-header-image" />
+  <img src={post.image} alt={post.title} className="blog-header-image" />
       <div className="blog-content">
         <h1>{post.title}</h1>
         <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{post.content}</ReactMarkdown>

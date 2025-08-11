@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -7,9 +7,24 @@ import Button from "@mui/material/Button";
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isBlogDetailPage = location.pathname.startsWith("/blog/"); // örn: /blog/1
 
   const [scrolled, setScrolled] = useState(false);
+  const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
+
+  useEffect(() => {
+    const handler = () => setToken(localStorage.getItem("auth_token"));
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    setToken(null);
+    navigate("/");
+  };
 
   useEffect(() => {
     if (!isBlogDetailPage) {
@@ -88,6 +103,21 @@ export default function Navbar() {
           >
             Blog
           </Button>
+
+          {!token ? (
+            <Button
+              component={Link}
+              to="/login"
+              variant="outlined"
+              sx={{ color: "white", borderColor: "white" }}
+            >
+              Giriş
+            </Button>
+          ) : (
+            <Button onClick={handleLogout} variant="outlined" sx={{ color: "white", borderColor: "white" }}>
+              Çıkış
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>
