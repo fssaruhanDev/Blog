@@ -50,7 +50,7 @@ export default function Blog() {
           {loading && <Typography>Yükleniyor...</Typography>}
           {error && <Typography color="error">{error}</Typography>}
           {!loading && !error && posts.length === 0 && <Typography>Henüz blog yok.</Typography>}
-          {posts.map((post) => (
+      {posts.map((post) => (
             <Box key={post.id || post.ID} sx={{ mb: 4 }}>
               <BlogCard post={{
                 id: post.id || post.ID,
@@ -58,7 +58,7 @@ export default function Blog() {
                 date: (post.publishedAt || post.PublishedAt || post.createdDate || post.CreatedDate || '').toString().substring(0,10),
                 summary: post.excerpt || post.Excerpt,
                 tags: post.tags || post.Tags || [],
-                image: post.coverImage || post.CoverImage || '/images/BlogExample.png'
+        image: post.coverImageUrl || post.CoverImageUrl || post.coverImage || post.CoverImage || '/images/BlogExample.png'
               }} />
               <Divider sx={{ mt: 3, borderColor: "#FF7A00" }} />
             </Box>
@@ -74,7 +74,7 @@ export default function Blog() {
               title: f.title || f.Title,
               date: (f.publishedAt || f.PublishedAt || f.createdDate || f.CreatedDate || '').toString().substring(0,10),
               summary: f.excerpt || f.Excerpt,
-              image: f.coverImage || f.CoverImage || '/images/BlogExample.png'
+              image: f.coverImageUrl || f.CoverImageUrl || f.coverImage || f.CoverImage || '/images/BlogExample.png'
             }} />
           ))}
         </Box>

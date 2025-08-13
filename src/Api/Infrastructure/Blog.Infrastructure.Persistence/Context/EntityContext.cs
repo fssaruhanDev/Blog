@@ -54,6 +54,7 @@ namespace Blog.Infrastructure.Persistence.Context
     public DbSet<Blog.Api.Domain.Models.ReadingList> ReadingLists { get; set; }
     public DbSet<Blog.Api.Domain.Models.ReadingListItem> ReadingListItems { get; set; }
     public DbSet<Blog.Api.Domain.Models.News> News { get; set; }
+    public DbSet<Blog.Api.Domain.Models.Page> Pages { get; set; }
 
 
 

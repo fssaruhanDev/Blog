@@ -7,17 +7,22 @@ export default function BlogCard({ post }) {
   return (
     <Box
       sx={{
-        display: "flex",
-        justifyContent: "space-between",
+        display: 'flex',
+        justifyContent: 'space-between',
         gap: 4,
         p: 3,
         mb: 4,
-        borderBottom: "2px solid #F5B700",
-        flexWrap: "wrap",
+        flexWrap: 'wrap',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: '14px',
+        boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
+        transition: 'box-shadow .25s ease, transform .25s ease',
+        '&:hover': { boxShadow:'4px 6px 18px -6px rgba(0,0,0,0.18)', transform:'translateY(-3px)' }
       }}
     >
       <Box sx={{ flex: 1, minWidth: "300px" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#E94F1D" }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--brand-primary)', letterSpacing:'-.3px' }}>
           {post.title}
         </Typography>
 
@@ -29,16 +34,17 @@ export default function BlogCard({ post }) {
           {post.summary}
         </Typography>
 
-        <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+  <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {post.tags?.map((tag, idx) => (
             <Chip
               key={idx}
               label={tag}
               size="small"
               sx={{
-                backgroundColor: "#FFE5DC",
-                color: "#E94F1D",
-                fontWeight: "bold",
+    backgroundColor: 'var(--surface-alt)',
+    color: 'var(--brand-primary)',
+    fontWeight: 600,
+    border:'1px solid var(--border)'
               }}
             />
           ))}
@@ -47,10 +53,12 @@ export default function BlogCard({ post }) {
         <Button
           variant="contained"
           sx={{
-            mt: 2,
-            backgroundColor: "#E94F1D",
-            textTransform: "none",
-            fontWeight: "bold",
+      mt:2,
+      background: 'linear-gradient(90deg,var(--brand-primary),var(--brand-accent))',
+      textTransform:'none',
+      fontWeight:600,
+      boxShadow:'0 4px 14px -4px rgba(0,0,0,0.25)',
+      '&:hover':{ filter:'brightness(1.05)', boxShadow:'0 6px 20px -6px rgba(0,0,0,0.4)', background:'linear-gradient(90deg,var(--brand-primary),var(--brand-accent))' }
           }}
           onClick={() => navigate(`/blog/${post.id}`)}
         >
@@ -71,11 +79,13 @@ export default function BlogCard({ post }) {
           src={post.image}
           alt={post.title}
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: "8px",
+            width:'100%',
+            height:'100%',
+            objectFit:'cover',
+            borderRadius:'10px',
+            background:'var(--surface-alt)'
           }}
+          onError={(e)=>{ if(e.currentTarget.dataset.fallback) { e.currentTarget.src='/images/BlogExample.png'; return; } e.currentTarget.dataset.fallback='1'; const raw=e.currentTarget.getAttribute('src')||''; const idx=raw.indexOf('/uploads/'); if(idx>-1){ e.currentTarget.src = window.location.origin + raw.substring(idx); } else { e.currentTarget.src='/images/BlogExample.png'; } }}
         />
       </Box>
     </Box>

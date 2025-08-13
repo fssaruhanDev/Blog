@@ -12,7 +12,8 @@ namespace Blog.Api.Domain.Models
         public DateTime? PublishedAt { get; set; }
         public DateTime? ScheduledAt { get; set; }
         public int? ReadingTime { get; set; }
-        public bool IsFeatured { get; set; }
-        public Guid? CoverMediaId { get; set; }
+    public bool IsFeatured { get; set; }
+    // CoverMediaId kaldırıldı (kullanılmıyor)
+    public string? CoverImageUrl { get; set; } // simple external URL or uploaded media reference
     }
 }

@@ -31,8 +31,18 @@ namespace Blog.Api.Application.Features.Commands.News.Update
             if (request.SourceName != null)
                 entity.SourceName = request.SourceName;
 
-            if (request.SourceUrl != null)
-                entity.SourceUrl = request.SourceUrl;
+                if (request.SourceUrl != null)
+                {
+                    var normalized = NormalizeUrl(request.SourceUrl);
+                    if (!string.Equals(entity.SourceUrl, normalized, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var exists = await _repo.AsQueryable()
+                            .AnyAsync(n => !n.isDeleted && n.SourceUrl != null && n.SourceUrl == normalized && n.ID != entity.ID, cancellationToken);
+                        if (exists)
+                            throw new InvalidOperationException("Bu SourceUrl zaten eklenmiş.");
+                        entity.SourceUrl = normalized;
+                    }
+                }
 
             if (request.Status != null)
                 entity.Status = request.Status;
@@ -56,5 +66,11 @@ namespace Blog.Api.Application.Features.Commands.News.Update
                 Tags = entity.Tags
             };
         }
+            private static string NormalizeUrl(string url)
+            {
+                url = url.Trim();
+                if (url.Length > 1 && url.EndsWith('/')) url = url.TrimEnd('/');
+                return url.ToLowerInvariant();
+            }
     }
 }

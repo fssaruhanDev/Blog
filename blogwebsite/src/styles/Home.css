@@ -2,8 +2,9 @@
   font-family: 'Segoe UI', sans-serif;
   padding: 0;
   margin: 0;
-  background-color: #fdf7f3;
-  color: #1a1a1a;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background .3s ease, color .3s ease;
 }
 
 .slider-section {
@@ -33,7 +34,7 @@
 .section h2 {
   margin-bottom: 20px;
   font-size: 1.6rem;
-  color: #d33a2c;
+  color: var(--brand-primary);
 }
 
 .cards {
@@ -46,21 +47,29 @@
   flex: 1;
   min-width: 250px;
   padding: 20px;
-  background-color: white;
-  border: 1px solid #f15c3c;
-  border-radius: 8px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+  transition: box-shadow .25s ease, transform .25s ease, background-color .3s ease, border-color .3s ease;
 }
+.card:hover { box-shadow:4px 6px 18px -6px rgba(0,0,0,0.18); transform:translateY(-3px); }
+.home-container .read-more { background: var(--brand-primary); }
 
 .read-more {
-  margin-top: 10px;
-  background-color: #d33a2c;
-  color: white;
+  margin-top:10px;
+  background:linear-gradient(90deg,var(--brand-primary),var(--brand-accent));
+  color:#fff;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+  padding:6px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+  letter-spacing:.3px;
+  box-shadow:0 3px 10px -3px rgba(0,0,0,0.25);
+  transition:filter .25s, box-shadow .25s;
 }
+.read-more:hover { filter:brightness(1.05); box-shadow:0 6px 18px -6px rgba(0,0,0,0.35); }
 .emoji {
   margin-right: 8px;
   font-size: 1.2rem;

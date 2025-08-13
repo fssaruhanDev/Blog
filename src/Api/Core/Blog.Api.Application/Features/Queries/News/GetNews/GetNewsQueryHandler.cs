@@ -34,7 +34,10 @@ namespace Blog.Api.Application.Features.Queries.News.GetNews
                 query = query.Where(n => n.Title.Contains(request.Search) || (n.Summary ?? "").Contains(request.Search));
 
             if (!string.IsNullOrWhiteSpace(request.Status))
-                query = query.Where(n => n.Status == request.Status);
+            {
+                var targetStatus = request.Status.Trim().ToLower();
+                query = query.Where(n => n.Status.ToLower() == targetStatus);
+            }
 
             var total = await query.CountAsync(cancellationToken);
 

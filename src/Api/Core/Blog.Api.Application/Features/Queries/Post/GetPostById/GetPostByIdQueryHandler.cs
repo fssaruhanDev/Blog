@@ -3,18 +3,21 @@ using Blog.Common.Models.Queries.Post;
 using MediatR;
 using DomainPost = Blog.Api.Domain.Models.Post;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.Api.Application.Features.Queries.Post.GetPostById
 {
     public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDetailViewModel>
     {
         private readonly IGenericRepository<DomainPost> _repo;
-        public GetPostByIdQueryHandler(IGenericRepository<DomainPost> repo)
-        { _repo = repo; }
+        private readonly IHttpContextAccessor _http;
+        public GetPostByIdQueryHandler(IGenericRepository<DomainPost> repo, IHttpContextAccessor http)
+        { _repo = repo; _http = http; }
 
         public async Task<PostDetailViewModel> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
             var p = await _repo.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException();
+            var baseUrl = _http.HttpContext != null ? $"{_http.HttpContext.Request.Scheme}://{_http.HttpContext.Request.Host}" : string.Empty;
             return new PostDetailViewModel
             {
                 ID = p.ID,
@@ -23,7 +26,11 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPostById
                 Content = p.Content,
                 Status = p.Status,
                 CreatedDate = p.CreatedDate,
-                PublishedAt = p.PublishedAt
+                PublishedAt = p.PublishedAt,
+                CoverImageUrl = string.IsNullOrWhiteSpace(p.CoverImageUrl) ? null :
+                    (p.CoverImageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                        ? p.CoverImageUrl
+                        : ($"{baseUrl}{(p.CoverImageUrl.StartsWith("/")?"":"/")}{p.CoverImageUrl}"))
             };
         }
     }

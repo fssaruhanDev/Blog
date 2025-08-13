@@ -23,9 +23,13 @@ namespace Blog.Api.WebApi.Controllers.News
 
         // Public list
         [HttpGet]
-        public async Task<ActionResult<Blog.Common.Models.Queries.PagedResult<NewsListItemViewModel>>> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] string? search = null)
+        public async Task<ActionResult<Blog.Common.Models.Queries.PagedResult<NewsListItemViewModel>>> Get(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? search = null,
+            [FromQuery] string? status = null)
         {
-            var ck = $"{CacheKeyPrefix}{page}:{pageSize}:{search}";
+            var ck = $"{CacheKeyPrefix}{page}:{pageSize}:{search}:{status}";
             if (_cache.TryGetValue(ck, out Blog.Common.Models.Queries.PagedResult<NewsListItemViewModel>? cached) && cached != null)
                 return Ok(cached);
 
@@ -34,6 +38,7 @@ namespace Blog.Api.WebApi.Controllers.News
                 Page = page,
                 PageSize = pageSize,
                 Search = search,
+                Status = status,
                 PublicOnly = true
             });
 
@@ -55,8 +60,8 @@ namespace Blog.Api.WebApi.Controllers.News
         }
 
         // Admin create
-        [HttpPost]
-        [Authorize]
+    [HttpPost]
+    [Authorize] // TODO: Eğer test için anonime açmak isterseniz geçici olarak [AllowAnonymous] ekleyin
         public async Task<ActionResult<NewsListItemViewModel>> Create([FromBody] CreateNewsCommand command)
         {
             try
@@ -64,6 +69,10 @@ namespace Blog.Api.WebApi.Controllers.News
                 var created = await _mediator.Send(command);
                 // Invalidate list cache (simple approach: clear all keys via prefix not directly supported; rely on short TTL)
                 return CreatedAtAction(nameof(GetById), new { id = created.ID }, created);
+            }
+            catch (InvalidOperationException dupEx)
+            {
+                return Conflict(new { message = dupEx.Message });
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException sql && sql.Number == 2601 || ex.InnerException is SqlException sql2 && sql2.Number == 2627)
             {
@@ -81,6 +90,10 @@ namespace Blog.Api.WebApi.Controllers.News
             {
                 var updated = await _mediator.Send(command);
                 return Ok(updated);
+            }
+            catch (InvalidOperationException dupEx)
+            {
+                return Conflict(new { message = dupEx.Message });
             }
             catch (DbUpdateException ex) when (ex.InnerException is SqlException sql && (sql.Number == 2601 || sql.Number == 2627))
             {

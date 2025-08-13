@@ -1,19 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
+/* Varsayılan açık (bej / turuncu kurumsal) */
+:root {
+  --bg: #fdf7f3; /* eski ana bej */
+  --text: #1a1a1a;
+  --surface: #ffffff; /* eski kart beyaz */
+  --surface-alt: #fff5ef; /* hafif bej */
+  --border: #f15c3c; /* önceki vurgu sınır (haber kartlarında vardı) */
+  --code-bg: #2d2d2d;
+  --code-inline-bg: #272b33;
+  --brand-primary: #d33a2c; /* ana turuncu-kırmızı */
+  --brand-accent: #ff7e5f;  /* degrade başı */
+  --brand-accent-2: #feb47b;/* degrade sonu */
+}
+
+/* Koyu tema (isteğe bağlı) */
+
 body {
   margin: 0;
   padding: 0;
-  background-color: #1e1e1e;
-  color: #f5f5f5;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Inter', sans-serif !important;
+  transition: background-color .35s ease, color .35s ease;
 }
 
-a {
-  color: #90caf9;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
+::selection { background:#d33a2c; color:#fff; }
+h1,h2,h3,h4,h5 { font-family:'Inter',sans-serif; font-weight:600; letter-spacing:-.3px; }
+html { scroll-behavior: smooth; }
 
-a:hover {
-  color: #64b5f6;
-}
+a { color: var(--brand-primary); text-decoration:none; transition:color .25s ease, border-color .25s ease; border-bottom:1px solid rgba(211,58,44,.35); }
+a:hover { color: var(--brand-accent); border-color: var(--brand-accent); }

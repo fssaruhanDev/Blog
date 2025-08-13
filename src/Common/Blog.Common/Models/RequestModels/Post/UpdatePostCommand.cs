@@ -12,5 +12,6 @@ namespace Blog.Common.Models.RequestModels.Post
         public string? Content { get; set; }
         public string Status { get; set; } = "draft";
         public DateTime? PublishedAt { get; set; }
+    public string? CoverImageUrl { get; set; }
     }
 }

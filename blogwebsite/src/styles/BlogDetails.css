@@ -1,65 +1,112 @@
-.blog-details-container {
-  max-width: 70%;
-  margin: auto;
-  padding: 2rem;
-  background: white;
-  color: #1a1a1a;
+/* Kurumsal renkler (yalnızca açık tema kullanılıyor) */
+
+body.reading-mode { background: var(--bg); color: var(--text); }
+
+.blog-details-wrapper { position: relative; }
+.reading-progress-bar {
+  position: fixed;
+  top: 0; left: 0; height: 4px;
+  background: linear-gradient(90deg,var(--brand-primary),var(--brand-accent),var(--brand-accent-2));
+  z-index: 1200;
+  transition: width .15s ease-out;
+  box-shadow: 0 2px 6px -1px rgba(0,0,0,0.25);
 }
 
-.blog-header-image {
-  width: 100%;
-  height: auto;
-  margin-bottom: 2rem;
-  border-radius: 8px;
+.blog-hero { position: relative; min-height: 50vh; display:flex; align-items:flex-end; border-bottom:1px solid var(--border); margin-top:82px; overflow:hidden; }
+.blog-hero-media { position:absolute; inset:0; overflow:hidden; }
+.blog-header-image { width:100%; height:100%; object-fit:cover; filter:brightness(.68) saturate(1.02); transform:scale(1.03); }
+/* Yeni katmanlar */
+.hero-layer { position:absolute; left:0; right:0; pointer-events:none; }
+.hero-top { top:0; height:55%; background:linear-gradient(180deg,rgba(0,0,0,0.58) 0%,rgba(0,0,0,0.38) 55%,rgba(0,0,0,0) 100%); z-index:1; }
+.hero-bottom-fade { bottom:0; height:48%; background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(253,247,243,0.55) 55%,#fdf7f3 100%); z-index:2; }
+
+/* Başlık kutusu konumlandırma (kullanıcının gösterdiği alan) */
+.blog-hero-titlebox { position:absolute; left: clamp(1.8rem,8vw,14rem); right: clamp(1.8rem,8vw,14rem); bottom: clamp(1.4rem,4vh,3.2rem); z-index:3; }
+.blog-hero-titlebox .blog-title { margin:0 0 .55rem; }
+.blog-title { margin:0 0 .5rem; font-size: clamp(2.3rem,4.6vw,3.1rem); letter-spacing:-.45px; font-weight:700; line-height:1.1; max-width:1000px; }
+.hero-title { color:#1a1a1a; -webkit-text-fill-color:initial; background:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
+.gradient-text { background:linear-gradient(90deg,var(--brand-primary) 0%,var(--brand-accent) 70%,var(--brand-accent-2) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; display:inline-block; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15)) drop-shadow(0 0 1px rgba(255,255,255,0.6)); }
+.post-meta { font-size:.75rem; text-transform:uppercase; letter-spacing:.22em; color:rgba(0,0,0,.55); font-weight:600; }
+
+/* Layout */
+.blog-details-container { max-width: 1180px; margin:0 auto; padding: clamp(1.4rem,3vw,2.6rem) clamp(1rem,3vw,2.2rem) 3.4rem; display:grid; grid-template-columns: minmax(0,1fr) 280px; gap: 2.4rem; }
+@media (max-width: 1080px){ .blog-details-container { grid-template-columns: 1fr; } .blog-toc { order:-1; } }
+
+/* İçerik */
+.blog-content { line-height: 1.68; font-size: 1.02rem; max-width: 760px; }
+.blog-content h1,.blog-content h2,.blog-content h3,.blog-content h4 { scroll-margin-top: 110px; }
+.blog-content h2 { margin-top:2.6rem; font-size: clamp(1.55rem,2.4vw,2.05rem); position:relative; }
+.blog-content h2:before { content:""; position:absolute; left:-1.05rem; top:50%; transform:translateY(-50%); width:5px; height:60%; background:linear-gradient(var(--brand-primary),var(--brand-accent)); border-radius:4px; box-shadow:0 0 0 1px rgba(0,0,0,0.05); }
+.blog-content h3 { margin-top:2rem; font-size: clamp(1.22rem,2vw,1.48rem); }
+.blog-content p { margin: 1.1rem 0; }
+.blog-content strong { color: var(--brand-primary); }
+.blog-content a { color: var(--brand-primary); text-decoration:none; border-bottom:1px solid rgba(211,58,44,.35); transition:color .2s,border-color .2s; }
+.blog-content a:hover { color:var(--brand-accent); border-color:var(--brand-accent); }
+
+/* Kod blokları */
+.blog-content code { background: var(--code-inline-bg); color: #ffe9d7; padding: .32rem .55rem; border-radius: 6px; font-size: .85rem; font-family: 'JetBrains Mono','Consolas',monospace; }
+.blog-content pre { background: var(--code-bg); color: var(--text); padding:1.25rem 1rem; border-radius:14px; overflow-x:auto; margin:1.5rem 0; font-size:.9rem; position:relative; box-shadow:0 4px 18px -4px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.05); }
+.blog-content pre code { background:transparent; padding:0; font-size:inherit; }
+
+/* Alıntı */
+.blog-content blockquote { margin:2rem 0; padding:1.2rem 1.4rem 1.2rem 1.25rem; background:var(--surface-alt); border-left:6px solid var(--brand-primary); border-radius:0 14px 14px 0; font-style:italic; color:var(--text); position:relative; }
+.blog-content blockquote:before { content:"\201C"; position:absolute; top:.15rem; left:.55rem; font-size:3.2rem; line-height:1; color:rgba(0,0,0,.08); font-family:Georgia,serif; }
+
+/* Tablo ve görsel */
+.blog-content table { width:100%; border-collapse:collapse; margin:1.75rem 0; font-size:.95rem; }
+.blog-content th,.blog-content td { border:1px solid var(--border); padding:.65rem .8rem; }
+.blog-content th { background:var(--surface-alt); }
+.content-image { max-width:100%; border-radius:14px; margin:1.5rem 0; box-shadow:0 4px 14px -3px rgba(0,0,0,.15),0 0 0 1px rgba(0,0,0,.04); }
+
+/* İçindekiler */
+.blog-toc { position:sticky; top:110px; height:fit-content; }
+.toc-box { background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.1rem 1.1rem 1.3rem; box-shadow:2px 2px 8px rgba(0,0,0,0.05); }
+.toc-title { font-size:.8rem; letter-spacing:.15em; text-transform:uppercase; color:var(--brand-primary); font-weight:600; margin-bottom:.75rem; }
+.toc-list { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:.45rem; }
+.toc-list a { color:var(--text); opacity:.78; font-size:.78rem; line-height:1.35; display:block; padding:.38rem .58rem; border-radius:8px; text-decoration:none; background:transparent; transition:background .25s,color .25s, opacity .25s, box-shadow .25s; position:relative; }
+.toc-list a.active { background:var(--surface-alt); opacity:1; box-shadow:inset 0 0 0 1px var(--border); }
+.toc-list a:hover { background:var(--surface-alt); opacity:1; }
+
+/* Yorumlar */
+.comments-section { margin-top:3.2rem; padding:2rem 1.8rem 2.4rem; background:var(--surface); border:1px solid var(--border); border-radius:28px; box-shadow:0 8px 32px -10px rgba(0,0,0,0.12),0 4px 12px -6px rgba(0,0,0,0.06); }
+.comments-section h2 { margin-top:0; font-size:1.28rem; letter-spacing:.35px; color:var(--brand-primary); display:flex; align-items:center; gap:.55rem; }
+.comments-section h2:before { content:""; width:6px; height:14px; border-radius:4px; background:linear-gradient(var(--brand-primary),var(--brand-accent)); display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,0.05); }
+.comments-section input[type="text"],
+.comments-section textarea { width:100%; padding:.9rem 1rem; font-size:.95rem; margin-top:1rem; border:1px solid var(--border); background:var(--surface-alt); color:var(--text); border-radius:14px; resize:vertical; font-family:inherit; transition:border-color .25s, box-shadow .25s, background .25s; }
+.comments-section input[type="text"]::placeholder,
+.comments-section textarea::placeholder { color:rgba(0,0,0,.45); }
+.comments-section textarea:focus { outline:none; border-color:var(--brand-primary); box-shadow:0 0 0 1px #d33a2c50,0 0 0 4px rgba(211,58,44,.25); }
+.comments-section button { margin-top:1rem; padding:.85rem 1.4rem; background:linear-gradient(90deg,var(--brand-primary),var(--brand-accent)); color:#fff; border:0; border-radius:14px; cursor:pointer; font-weight:600; letter-spacing:.4px; font-size:.92rem; box-shadow:0 4px 16px -4px rgba(0,0,0,.25); transition:transform .2s, box-shadow .25s, filter .25s; }
+.comments-section button:hover { transform:translateY(-2px); box-shadow:0 8px 26px -6px rgba(0,0,0,.35); filter:brightness(1.05); }
+.comments-section button:active { transform:translateY(0); }
+.comments-section ul { list-style:none; padding:0; margin:1.3rem 0 0; display:flex; flex-direction:column; gap:.85rem; }
+.comments-section li { background:var(--surface-alt); border:1px solid var(--border); padding:.7rem .95rem .8rem; border-radius:14px; font-size:.88rem; line-height:1.45; box-shadow:0 2px 6px -2px rgba(0,0,0,0.08); }
+.comments-section li strong { font-weight:600; }
+
+/* Animasyon yardımcıları */
+.fade-in { animation: fadeIn .7s ease both; }
+.fade-slide { animation: fadeSlide .8s cubic-bezier(.53,.02,.21,1.02) both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:translateY(0);} }
+@keyframes fadeSlide { from { opacity:0; transform: translateY(18px) scale(.98);} to { opacity:1; transform: translateY(0) scale(1);} }
+
+/* Code copy button override for light theme */
+.copy-btn { font-family:inherit; }
+
+/* Scrollbar ince ayar (webkit) */
+body.reading-mode ::-webkit-scrollbar { width: 10px; }
+body.reading-mode ::-webkit-scrollbar-track { background:var(--bg); }
+body.reading-mode ::-webkit-scrollbar-thumb { background:linear-gradient(var(--brand-accent),var(--brand-accent-2)); border-radius:20px; border:2px solid var(--bg); }
+body.reading-mode ::-webkit-scrollbar-thumb:hover { filter:brightness(1.05); }
+
+/* İçerik içi listeler */
+.blog-content ul { padding-left:1.3rem; }
+.blog-content li { margin:.4rem 0; }
+
+/* Responsive iyileştirmeler */
+@media (max-width:720px){
+  .blog-content { font-size:1rem; }
+  .comments-section { padding:1.4rem 1.25rem 1.9rem; }
+  .blog-title { font-size: clamp(2.1rem,7vw,3.1rem); }
+  .blog-hero-overlay { padding:3.2rem 1.4rem 2.2rem; }
 }
 
-.blog-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.blog-content code {
-  background: #2d2d2d;
-  color: #f8f8f2;
-  padding: 0.3rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.blog-content pre {
-  background: #2d2d2d;
-  color: #f8f8f2;
-  padding: 1rem;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-
-.comments-section {
-  margin-top: 3rem;
-}
-
-.comments-section textarea {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1rem;
-  margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  resize: vertical;
-}
-
-.comments-section button {
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background-color: #d33a2c;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.comments-section ul {
-  list-style: disc;
-  padding-left: 1.5rem;
-}

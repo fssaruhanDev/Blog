@@ -21,7 +21,22 @@ const Home = () => {
           getPosts({ page: 1, pageSize: 6, status: "published" })
         ]);
         if (!cancelled) {
-          setNews(newsResp.items || newsResp.Items || []);
+          const incomingNews = newsResp.items || newsResp.Items || [];
+          console.debug('Home load newsResp raw:', newsResp);
+            if (incomingNews.length === 0) {
+              // Fallback: status filtresiz dene (published alanı boşsa)
+              try {
+                const nf = await getNews({ page: 1, pageSize: 6 });
+                const fallbackItems = nf.items || nf.Items || [];
+                console.debug('Home fallback news:', fallbackItems);
+                setNews(fallbackItems);
+              } catch (e2) {
+                console.warn('Fallback news fetch failed', e2);
+                setNews([]);
+              }
+            } else {
+              setNews(incomingNews);
+            }
           setPosts(postsResp.items || postsResp.Items || []);
         }
       } catch (e) {
@@ -60,8 +75,18 @@ const Home = () => {
         <h2><span className="emoji">📝</span> Son Bloglar</h2>
         <div className="cards">
           {posts.map(p => (
-            <div className="card" key={p.id || p.ID}>
-              <h3>{p.title || p.Title}</h3>
+            <div className="card" key={p.id || p.ID} style={{display:'flex',flexDirection:'column',position:'relative'}}>
+              {(p.coverImageUrl || p.CoverImageUrl) && (
+                <div style={{width:'100%',height:160,overflow:'hidden',borderRadius:8,marginBottom:12,background:'#f1f5f9',border:'1px solid #eee'}}>
+                  <img
+                    src={p.coverImageUrl || p.CoverImageUrl}
+                    alt={p.title || p.Title}
+                    style={{width:'100%',height:'100%',objectFit:'cover'}}
+                    onError={(e)=>{ const raw=e.currentTarget.getAttribute('src')||''; const idx=raw.indexOf('/uploads/'); if(!e.currentTarget.dataset.fallback && idx>-1){ e.currentTarget.dataset.fallback='1'; e.currentTarget.src=window.location.origin+raw.substring(idx); return;} e.currentTarget.style.opacity='0.4'; }}
+                  />
+                </div>
+              )}
+              <h3 style={{marginTop:0}}>{p.title || p.Title}</h3>
               <small>{(p.publishedAt || p.PublishedAt || p.createdDate || p.CreatedDate || '').toString().substring(0,10)}</small>
               <p>{p.excerpt || p.Excerpt}</p>
               <button className="read-more" onClick={() => navigate(`/blog/${p.id || p.ID}`)}>Devamını Oku</button>

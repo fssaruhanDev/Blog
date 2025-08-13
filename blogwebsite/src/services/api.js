@@ -17,9 +17,13 @@ async function request(path, { method = "GET", body, token } = {}) {
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch (networkErr) {
-    // Network/CORS errors do not have a response; surface a clear message
-    const msg = networkErr?.message || "Network error";
-    throw new Error(`İstek başarısız: ${msg}. URL: ${API_BASE_URL}${path}`);
+    // Network/CORS errors do not have a response; surface clearer message + probable cause
+    const raw = networkErr?.message || "Network error";
+    let hint = '';
+    if (/failed to fetch/i.test(raw) || /network/i.test(raw)) {
+      hint = ' (API sunucusu kapalı olabilir veya CORS/sertifika problemi var)';
+    }
+    throw new Error(`Bağlantı hatası: ${raw}${hint}. URL: ${API_BASE_URL}${path}`);
   }
 
   const contentType = res.headers.get("content-type") || "";
@@ -51,18 +55,41 @@ export function getPosts({ page = 1, pageSize = 20, search = "", status = "" } =
   return request(`/api/posts?${params.toString()}`);
 }
 
-export function createPost({ title, excerpt, content, status = "draft", publishedAt = null }) {
+export function createPost({ title, excerpt, content, coverImageUrl, status = "draft", publishedAt = null }) {
   return request(`/api/posts`, {
     method: "POST",
-    body: { Title: title, Excerpt: excerpt, Content: content, Status: status, PublishedAt: publishedAt },
+  body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
   });
 }
 
-export function updatePost(id, { title, excerpt, content, status = "draft", publishedAt = null }) {
+export function updatePost(id, { title, excerpt, content, coverImageUrl, status = "draft", publishedAt = null }) {
   return request(`/api/posts/${id}`, {
     method: "PUT",
-    body: { Title: title, Excerpt: excerpt, Content: content, Status: status, PublishedAt: publishedAt },
+  body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
   });
+}
+
+// Internal helper to build auth header for non-JSON multipart calls
+function buildAuthHeader(){
+  if (typeof localStorage === 'undefined') return {};
+  const token = localStorage.getItem('auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// Upload image (returns {url})
+export async function uploadImage(file){
+  const form = new FormData();
+  form.append('file', file);
+  const res = await fetch(`${API_BASE_URL}/api/MediaUpload/image`, {
+    method:'POST',
+    body: form,
+    headers: { ...buildAuthHeader() }
+  });
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(txt || 'Upload hata');
+  }
+  return res.json();
 }
 
 export function deletePost(id) {
@@ -73,7 +100,43 @@ export function getPost(id) {
   return request(`/api/posts/${id}`);
 }
 
+// ----- Comments -----
+export function getComments(postId){
+  return request(`/api/posts/${postId}/comments`);
+}
+export function addComment(postId,{authorName, authorEmail, content}){
+  return request(`/api/posts/${postId}/comments`, { method:'POST', body:{ authorName, authorEmail, content } });
+}
+
 export { API_BASE_URL };
+
+// Media URL resolver: accepts stored value (possibly '/uploads/..', absolute, or external)
+export function resolveMediaUrl(raw) {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed; // already absolute
+  if (trimmed.startsWith('/')) return `${API_BASE_URL.replace(/\/$/, '')}${trimmed}`;
+  // fallback: treat as relative under uploads
+  if (trimmed.includes('/uploads/')) {
+    const idx = trimmed.indexOf('/uploads/');
+    return `${API_BASE_URL.replace(/\/$/, '')}${trimmed.substring(idx)}`;
+  }
+  return trimmed;
+}
+
+// Basit API canlılık kontrolü (sunucu kapalıysa hızlı döner)
+export async function checkApiStatus(timeoutMs = 2500) {
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/news?page=1&pageSize=1`, { method: 'GET', signal: ctrl.signal });
+    clearTimeout(t);
+    return res.ok;
+  } catch {
+    clearTimeout(t);
+    return false;
+  }
+}
 
 // ---------------------------
 // News API with local fallback
@@ -84,6 +147,8 @@ function lsGet(key, def) {
 }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 const NEWS_LS_KEY = 'news_items_v1';
+const PENDING_OPS_KEY = 'pending_ops_v1';
+const OFFLINE_FLAG = '_pending';
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
 
 function newsLocalList({ page = 1, pageSize = 20, search = '', status = '' } = {}) {
@@ -107,7 +172,7 @@ function newsLocalGet(id) {
 
 function newsLocalCreate({ title, summary, sourceUrl, sourceName, tags = [], status = 'draft', publishedAt = null }) {
   const all = lsGet(NEWS_LS_KEY, []);
-  const item = { id: uid(), title, summary, sourceUrl, sourceName, tags, status, publishedAt, createdDate: new Date().toISOString() };
+  const item = { id: uid(), title, summary, sourceUrl, sourceName, tags, status, publishedAt, createdDate: new Date().toISOString(), [OFFLINE_FLAG]: true };
   all.push(item); lsSet(NEWS_LS_KEY, all); return item;
 }
 
@@ -115,12 +180,79 @@ function newsLocalUpdate(id, patch) {
   const all = lsGet(NEWS_LS_KEY, []);
   const idx = all.findIndex(n => n.id === id);
   if (idx === -1) throw new Error('News bulunamadı');
-  all[idx] = { ...all[idx], ...patch }; lsSet(NEWS_LS_KEY, all); return all[idx];
+  all[idx] = { ...all[idx], ...patch, [OFFLINE_FLAG]: true };
+  lsSet(NEWS_LS_KEY, all); return all[idx];
 }
 
 function newsLocalDelete(id) {
   const all = lsGet(NEWS_LS_KEY, []);
   const next = all.filter(n => n.id !== id); lsSet(NEWS_LS_KEY, next); return { ok: true };
+}
+
+// -------------- Offline Queue --------------
+function loadQueue() { return lsGet(PENDING_OPS_KEY, []); }
+function saveQueue(q) { lsSet(PENDING_OPS_KEY, q); }
+function enqueue(op) { const q = loadQueue(); q.push(op); saveQueue(q); }
+
+async function processQueue() {
+  const q = loadQueue();
+  if (!q.length) return { processed: 0 };
+  let processed = 0;
+  const remaining = [];
+  for (const op of q) {
+    try {
+      if (op.type === 'createNews') {
+        const resp = await createNews(op.payload);
+        // replace local temp item with server item (match by sourceUrl if exists, else by temp local id stored in op.tempId)
+        if (resp && (resp.ID || resp.id)) {
+          const all = lsGet(NEWS_LS_KEY, []);
+          let idx = -1;
+          if (op.tempId) idx = all.findIndex(n => n.id === op.tempId);
+          if (idx === -1 && op.payload.sourceUrl) idx = all.findIndex(n => n.sourceUrl === op.payload.sourceUrl);
+            if (idx !== -1) {
+              all[idx] = {
+                id: resp.ID || resp.id,
+                title: resp.Title || resp.title,
+                summary: resp.Summary || resp.summary,
+                sourceUrl: resp.SourceUrl || resp.sourceUrl,
+                sourceName: resp.SourceName || resp.sourceName,
+                status: resp.Status || resp.status,
+                publishedAt: resp.PublishedAt || resp.publishedAt,
+                createdDate: resp.CreatedDate || resp.createdDate,
+                tags: (resp.Tags || resp.tags || '')?.split?.(',') || resp.tags || [],
+              };
+              lsSet(NEWS_LS_KEY, all);
+            }
+        }
+      } else if (op.type === 'updateNews') {
+        await updateNews(op.id, op.payload);
+      } else if (op.type === 'deleteNews') {
+        await deleteNews(op.id);
+      }
+      processed++;
+    } catch (e) {
+      // keep op for next round
+      op.lastError = e.message;
+      remaining.push(op);
+    }
+  }
+  saveQueue(remaining);
+  return { processed, remaining: remaining.length };
+}
+
+let autoSyncStarted = false;
+export function startAutoSync(intervalMs = 10000) {
+  if (autoSyncStarted) return;
+  autoSyncStarted = true;
+  const tick = async () => {
+    const up = await checkApiStatus(1500);
+    if (!up) return;
+    try { await processQueue(); } catch { /* ignore */ }
+  };
+  setInterval(tick, intervalMs);
+  window.addEventListener('online', () => setTimeout(tick, 500));
+  // initial
+  tick();
 }
 
 export async function getNews(params = {}) {
@@ -142,23 +274,33 @@ export async function getNewsItem(id) {
 }
 
 export async function createNews({ title, summary, sourceUrl, sourceName, tags = [], status = 'draft', publishedAt = null }) {
+  const tagsValue = Array.isArray(tags) ? tags.join(',') : (tags || '');
+  const body = { Title: title, Summary: summary, SourceName: sourceName, SourceUrl: sourceUrl, Status: status, PublishedAt: publishedAt, Tags: tagsValue };
   try {
-    return await request(`/api/news`, { method: 'POST', body: { Title: title, Summary: summary, SourceUrl: sourceUrl, SourceName: sourceName, Tags: tags, Status: status, PublishedAt: publishedAt } });
+    const resp = await request(`/api/news`, { method: 'POST', body });
+    return resp;
   } catch (e) {
-    console.warn('createNews fallback:', e.message);
-    return newsLocalCreate({ title, summary, sourceUrl, sourceName, tags, status, publishedAt });
+    console.warn('createNews fallback (queued):', e.message);
+    const local = newsLocalCreate({ title, summary, sourceUrl, sourceName, tags, status, publishedAt });
+    enqueue({ type: 'createNews', payload: { title, summary, sourceUrl, sourceName, tags, status, publishedAt }, tempId: local.id, createdAt: Date.now() });
+    return local;
   }
 }
 
 export async function updateNews(id, { title, summary, sourceUrl, sourceName, tags = [], status = 'draft', publishedAt = null }) {
+  const tagsValue = Array.isArray(tags) ? tags.join(',') : (tags || '');
+  const body = { Id: id, Title: title, Summary: summary, SourceName: sourceName, SourceUrl: sourceUrl, Status: status, PublishedAt: publishedAt, Tags: tagsValue };
   try {
-    return await request(`/api/news/${id}`, { method: 'PUT', body: { Title: title, Summary: summary, SourceUrl: sourceUrl, SourceName: sourceName, Tags: tags, Status: status, PublishedAt: publishedAt } });
+    const resp = await request(`/api/news/${id}`, { method: 'PUT', body });
+    return resp;
   } catch (e) {
-    console.warn('updateNews fallback:', e.message);
-    return newsLocalUpdate(id, { title, summary, sourceUrl, sourceName, tags, status, publishedAt });
+    console.warn('updateNews fallback (queued):', e.message);
+    const updated = newsLocalUpdate(id, { title, summary, sourceUrl, sourceName, tags, status, publishedAt });
+    enqueue({ type: 'updateNews', id, payload: { title, summary, sourceUrl, sourceName, tags, status, publishedAt }, createdAt: Date.now() });
+    return updated;
   }
 }
 
 export async function deleteNews(id) {
-  try { return await request(`/api/news/${id}`, { method: 'DELETE' }); } catch (e) { console.warn('deleteNews fallback:', e.message); return newsLocalDelete(id); }
+  try { return await request(`/api/news/${id}`, { method: 'DELETE' }); } catch (e) { console.warn('deleteNews fallback (queued):', e.message); enqueue({ type: 'deleteNews', id, createdAt: Date.now() }); return newsLocalDelete(id); }
 }

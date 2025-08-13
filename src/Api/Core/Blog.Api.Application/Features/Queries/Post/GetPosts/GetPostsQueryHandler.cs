@@ -9,6 +9,7 @@ using Blog.Common.Models.Queries.Post;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Blog.Common.Infrastructure;
 
 namespace Blog.Api.Application.Features.Queries.Post.GetPosts
 {
@@ -17,10 +18,10 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPosts
     private readonly IGenericRepository<DomainPost> _repo;
     private readonly IHttpContextAccessor _http;
     public GetPostsQueryHandler(IGenericRepository<DomainPost> repo, IHttpContextAccessor http)
-        {
-            _repo = repo;
-            _http = http;
-        }
+    {
+        _repo = repo;
+        _http = http;
+    }
 
         public async Task<PagedResult<PostListItemViewModel>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
         {
@@ -30,11 +31,8 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPosts
             var query = _repo.AsQueryable().Where(p => !p.isDeleted);
 
             // User scope: only posts by current user (if authenticated)
-            var userIdStr = _http?.HttpContext?.Items?["UserId"] as string ?? _http?.HttpContext?.User?.FindFirst("nameid")?.Value;
-            if (!string.IsNullOrWhiteSpace(userIdStr) && Guid.TryParse(userIdStr, out var userId))
-            {
+            if (UserContextHelper.TryGetUserId(_http, out var userId))
                 query = query.Where(p => p.AuthorId == userId);
-            }
 
             if (!string.IsNullOrWhiteSpace(request.Search))
                 query = query.Where(p => p.Title.Contains(request.Search));
@@ -43,6 +41,8 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPosts
                 query = query.Where(p => p.Status == request.Status);
 
             var total = await query.CountAsync(cancellationToken);
+
+            var baseUrl = _http.HttpContext != null ? $"{_http.HttpContext.Request.Scheme}://{_http.HttpContext.Request.Host}" : string.Empty;
 
             var items = await query
                 .OrderByDescending(p => p.PublishedAt ?? p.CreatedDate)
@@ -55,7 +55,11 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPosts
                     Excerpt = p.Excerpt,
                     Status = p.Status,
                     CreatedDate = p.CreatedDate,
-                    PublishedAt = p.PublishedAt
+                    PublishedAt = p.PublishedAt,
+                    CoverImageUrl = string.IsNullOrWhiteSpace(p.CoverImageUrl) ? null :
+                        (p.CoverImageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                            ? p.CoverImageUrl
+                            : ($"{baseUrl}{(p.CoverImageUrl.StartsWith("/")?"":"/")}{p.CoverImageUrl}"))
                 })
                 .ToArrayAsync(cancellationToken);
 

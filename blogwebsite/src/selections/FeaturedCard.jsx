@@ -14,13 +14,14 @@ export default function FeaturedCard({ title, image, date, description }) {
       }}
     >
       <img
-        src={image}
+  src={image}
         alt={title}
         style={{
           width: "100%",
           height: "120px",
           objectFit: "cover",
         }}
+  onError={(e)=>{ if(!e.currentTarget.dataset.fallback){ e.currentTarget.dataset.fallback='1'; const raw=e.currentTarget.getAttribute('src')||''; const idx=raw.indexOf('/uploads/'); if(idx>-1){ e.currentTarget.src= window.location.origin + raw.substring(idx); return; } } e.currentTarget.src='/images/BlogExample.png'; }}
       />
       <Box sx={{ p: 1.5 }}>
         <Typography

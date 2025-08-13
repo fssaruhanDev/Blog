@@ -24,6 +24,7 @@ builder.Services.AddFluentValidationAutoValidation()
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
@@ -126,6 +127,15 @@ if (httpsConfigured)
     app.UseHttpsRedirection();
 
 app.UseCors(CorsPolicy);
+
+// Serve uploaded files (wwwroot/uploads)
+var uploadRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+if (!Directory.Exists(uploadRoot)) Directory.CreateDirectory(uploadRoot);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = ""
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
