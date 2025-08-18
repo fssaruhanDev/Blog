@@ -17,8 +17,8 @@ export default function BlogCard({ post }) {
         border: '1px solid var(--border)',
         borderRadius: '14px',
         boxShadow: '2px 2px 8px rgba(0,0,0,0.05)',
-        transition: 'box-shadow .25s ease, transform .25s ease',
-        '&:hover': { boxShadow:'4px 6px 18px -6px rgba(0,0,0,0.18)', transform:'translateY(-3px)' }
+  transition: 'box-shadow .25s ease, transform .25s ease, border-color .25s',
+  '&:hover': { boxShadow:'3px 4px 14px -5px rgba(0,0,0,0.22)', transform:'translateY(-2px)', borderColor:'var(--brand-primary)' }
       }}
     >
       <Box sx={{ flex: 1, minWidth: "300px" }}>
@@ -53,12 +53,13 @@ export default function BlogCard({ post }) {
         <Button
           variant="contained"
           sx={{
-      mt:2,
-      background: 'linear-gradient(90deg,var(--brand-primary),var(--brand-accent))',
-      textTransform:'none',
-      fontWeight:600,
-      boxShadow:'0 4px 14px -4px rgba(0,0,0,0.25)',
-      '&:hover':{ filter:'brightness(1.05)', boxShadow:'0 6px 20px -6px rgba(0,0,0,0.4)', background:'linear-gradient(90deg,var(--brand-primary),var(--brand-accent))' }
+            mt:2,
+            background: 'var(--brand-primary)',
+            textTransform:'none',
+            fontWeight:600,
+            letterSpacing:.2,
+            boxShadow:'0 4px 12px -4px rgba(0,0,0,0.25)',
+            '&:hover':{ background:'var(--brand-primary)', filter:'brightness(1.07)', boxShadow:'0 6px 18px -6px rgba(0,0,0,0.4)' }
           }}
           onClick={() => navigate(`/blog/${post.id}`)}
         >

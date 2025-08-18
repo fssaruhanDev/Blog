@@ -12,7 +12,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const isBlogDetailPage = location.pathname.startsWith("/blog/");
 
-  const [scrolled, setScrolled] = useState(false);
+  // Eski tasarım: sabit degrade bar, scroll efekt yok
   const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
   // Tek açık tema (kurumsal) kullanılıyor.
 
@@ -31,32 +31,14 @@ export default function Navbar() {
     navigate("/");
   };
 
-  useEffect(() => {
-    if (!isBlogDetailPage) {
-      const handleScroll = () => {
-        setScrolled(window.scrollY > 10);
-      };
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
-  }, [isBlogDetailPage]);
-
-  const backgroundStyle = (isBlogDetailPage || scrolled)
-    ? "rgba(255,255,255,0.92)"
-    : "transparent";
-  const textColor = "#d33a2c";
+  const textColor = "#ffffff";
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{
-  background: backgroundStyle,
-  boxShadow: (isBlogDetailPage || scrolled) ? '0 4px 14px -6px rgba(0,0,0,0.18)' : 'none',
-  transition: "background 0.35s ease, box-shadow 0.3s ease",
-  backdropFilter: (isBlogDetailPage || scrolled) ? 'blur(10px)' : 'none',
-  borderBottom: (isBlogDetailPage || scrolled) ? '1px solid rgba(0,0,0,0.06)' : 'none'
-      }}
-    >
+    <AppBar position="fixed" sx={{
+      background: 'var(--nav-gradient)',
+      boxShadow: '0 2px 10px -4px rgba(0,0,0,0.25)',
+      border: 'none'
+    }}>
       <Toolbar
         sx={{
           display: "flex",
@@ -73,7 +55,7 @@ export default function Navbar() {
           <img src="/FSSaruhan-white.png" alt="Logo" style={{ height: 50 }} />
         </Box>
 
-        {/* Menü – ortalanmış ama sağda */}
+  {/* Menü */}
         <Box
           sx={{
             flex:1,
@@ -83,16 +65,29 @@ export default function Navbar() {
             gap: 3.2,
           }}
         >
-          <Button component={Link} to="/" sx={{ color: textColor, fontSize:"0.95rem", fontWeight:600, position:'relative', '&:hover':{color:'var(--brand-accent)'}, '&.active:after':{content:'""', position:'absolute', left:12, right:12, bottom:-4, height:3, borderRadius:2, background:'linear-gradient(90deg,#d33a2c,#ff7e5f)'} }} className={location.pathname==='/'? 'active':''}>Ana Sayfa</Button>
-
-          <Button component={Link} to="/hakkimda" sx={{ color: textColor, fontSize:"0.95rem", fontWeight:600, position:'relative', '&:hover':{color:'var(--brand-accent)'}, '&.active:after':{content:'""', position:'absolute', left:12, right:12, bottom:-4, height:3, borderRadius:2, background:'linear-gradient(90deg,#d33a2c,#ff7e5f)'} }} className={location.pathname.startsWith('/hakkimda')? 'active':''}>Hakkımda</Button>
-
-          <Button component={Link} to="/blog" sx={{ color: textColor, fontSize:"0.95rem", fontWeight:600, position:'relative', '&:hover':{color:'var(--brand-accent)'}, '&.active:after':{content:'""', position:'absolute', left:12, right:12, bottom:-4, height:3, borderRadius:2, background:'linear-gradient(90deg,#d33a2c,#ff7e5f)'} }} className={location.pathname.startsWith('/blog')? 'active':''}>Blog</Button>
+          {[
+            {to:'/', label:'Ana Sayfa', active: location.pathname==='/'},
+            {to:'/hakkimda', label:'Hakkımda', active: location.pathname.startsWith('/hakkimda')},
+            {to:'/blog', label:'Blog', active: location.pathname.startsWith('/blog')}
+          ].map(item => (
+            <Button key={item.to} component={Link} to={item.to}
+              sx={{
+                color: textColor,
+                fontSize:"0.95rem",
+                fontWeight:600,
+                position:'relative',
+                letterSpacing:.3,
+                '&:hover':{opacity:.9},
+                '&:after': item.active ? {content:'""', position:'absolute', left:10, right:10, bottom:-6, height:3, borderRadius:2, background:'#fff'} : {}
+              }}
+              className={item.active? 'active':''}
+            >{item.label}</Button>
+          ))}
 
           {!token ? (
-      <Button component={Link} to="/login" variant="outlined" sx={{ color:textColor, borderColor:'var(--brand-primary)', '&:hover':{borderColor:'var(--brand-accent)', background:'rgba(211,58,44,0.06)'} }}>Giriş</Button>
+  <Button component={Link} to="/login" variant="contained" sx={{ background:'var(--brand-primary)', '&:hover':{background:'#c13326'} }}>Giriş</Button>
           ) : (
-      <Button onClick={handleLogout} variant="outlined" sx={{ color:textColor, borderColor:'var(--brand-primary)', '&:hover':{borderColor:'var(--brand-accent)', background:'rgba(211,58,44,0.06)'} }}>Çıkış</Button>
+  <Button onClick={handleLogout} variant="contained" sx={{ background:'var(--brand-primary)', '&:hover':{background:'#c13326'} }}>Çıkış</Button>
           )}
         </Box>
     <Divider orientation="vertical" flexItem sx={{borderColor:'rgba(0,0,0,0.08)', mx:2, display:{xs:'none', md:'block'} }} />

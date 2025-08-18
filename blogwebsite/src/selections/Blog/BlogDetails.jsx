@@ -199,7 +199,7 @@ const BlogDetails = () => {
               placeholder="İsim (opsiyonel)"
               value={commentName}
               onChange={(e)=>setCommentName(e.target.value)}
-              style={{width:'100%',padding:'0.7rem 1rem',borderRadius:12,border:'1px solid var(--border, #333)',background:'var(--surface-alt,#222)',color:'inherit',marginTop:'1rem'}}
+              style={{width:'100%',padding:'0.7rem 1rem',borderRadius:12,border:'1px solid var(--border)',background:'var(--surface-alt)',color:'inherit',marginTop:'1rem'}}
             />
             <textarea
               placeholder="Yorumunuzu yazın"
