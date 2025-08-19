@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Blog.Common\Blog.Common.csproj" />
-    <ProjectReference Include="..\..\Core\Blog.Api.Application\Blog.Api.Application.csproj" />
     <ProjectReference Include="..\..\Core\Blog.Api.Domain\Blog.Api.Domain.csproj" />
   </ItemGroup>
 

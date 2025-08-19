@@ -375,3 +375,191 @@ export async function updateNews(id, { title, summary, sourceUrl, sourceName, ta
 export async function deleteNews(id) {
   try { return await request(`/api/news/${id}`, { method: 'DELETE' }); } catch (e) { console.warn('deleteNews fallback (queued):', e.message); enqueue({ type: 'deleteNews', id, createdAt: Date.now() }); return newsLocalDelete(id); }
 }
+
+// ===== CATEGORIES API =====
+export async function getCategories(params = {}) {
+  const queryParams = new URLSearchParams();
+  if (params.contentType) queryParams.append('contentType', params.contentType);
+  if (params.isActive !== undefined) queryParams.append('isActive', params.isActive);
+  if (params.isFeatured !== undefined) queryParams.append('isFeatured', params.isFeatured);
+  if (params.includeHierarchy) queryParams.append('includeHierarchy', params.includeHierarchy);
+  if (params.search) queryParams.append('search', params.search);
+  if (params.orderBy) queryParams.append('orderBy', params.orderBy);
+  if (params.ascending !== undefined) queryParams.append('ascending', params.ascending);
+  
+  const query = queryParams.toString();
+  const url = `/api/admin/categories${query ? `?${query}` : ''}`;
+  return await request(url);
+}
+
+export async function getPublicCategories(contentType = null) {
+  const query = contentType ? `?contentType=${contentType}` : '';
+  return await request(`/api/categories${query}`);
+}
+
+export async function getCategory(id) {
+  return await request(`/api/admin/categories/${id}`);
+}
+
+export async function createCategory(categoryData) {
+  return await request(`/api/admin/categories`, { 
+    method: 'POST', 
+    body: categoryData 
+  });
+}
+
+export async function updateCategory(id, categoryData) {
+  return await request(`/api/admin/categories/${id}`, { 
+    method: 'PUT', 
+    body: categoryData 
+  });
+}
+
+export async function deleteCategory(id, forceDelete = false) {
+  const query = forceDelete ? '?forceDelete=true' : '';
+  return await request(`/api/admin/categories/${id}${query}`, { 
+    method: 'DELETE' 
+  });
+}
+
+// ===== PROJECTS API =====
+export async function getPublicProjects({ page = 1, pageSize = 20, search = "", categoryId = "", type = "", status = "", featured = false } = {}) {
+  const params = new URLSearchParams();
+  params.set("page", page);
+  params.set("pageSize", pageSize);
+  if (search) params.set("search", search);
+  if (categoryId) params.set("categoryId", categoryId);
+  if (type) params.set("type", type);
+  if (status) params.set("status", status);
+  if (featured) params.set("featured", "true");
+  return request(`/api/projects?${params.toString()}`);
+}
+
+export function getPublicProject(idOrSlug) {
+  return request(`/api/projects/${idOrSlug}`);
+}
+
+export function getFeaturedProjects({ count = 6 } = {}) {
+  return request(`/api/projects/featured?count=${count}`);
+}
+
+export function getProjectsByCategory(categoryId, { page = 1, pageSize = 20 } = {}) {
+  return request(`/api/projects/category/${categoryId}?page=${page}&pageSize=${pageSize}`);
+}
+
+export function getProjectsByTag(tagId, { page = 1, pageSize = 20 } = {}) {
+  return request(`/api/projects/tag/${tagId}?page=${page}&pageSize=${pageSize}`);
+}
+
+export function getProjectsByType(type, { page = 1, pageSize = 20 } = {}) {
+  return request(`/api/projects/type/${type}?page=${page}&pageSize=${pageSize}`);
+}
+
+export function getProjectsByStatus(status, { page = 1, pageSize = 20 } = {}) {
+  return request(`/api/projects/status/${status}?page=${page}&pageSize=${pageSize}`);
+}
+
+export function searchProjects(searchTerm, { page = 1, pageSize = 20 } = {}) {
+  return request(`/api/projects/search?q=${encodeURIComponent(searchTerm)}&page=${page}&pageSize=${pageSize}`);
+}
+
+export function getRelatedProjects(projectId, { count = 4 } = {}) {
+  return request(`/api/projects/${projectId}/related?count=${count}`);
+}
+
+// Admin Project APIs
+export async function getAdminProjects({ page = 1, pageSize = 20, search = "", categoryId = "", type = "", status = "" } = {}) {
+  const params = new URLSearchParams();
+  params.set("page", page);
+  params.set("pageSize", pageSize);
+  if (search) params.set("search", search);
+  if (categoryId) params.set("categoryId", categoryId);
+  if (type) params.set("type", type);
+  if (status) params.set("status", status);
+  return request(`/api/admin/projects?${params.toString()}`);
+}
+
+export function getAdminProject(id) {
+  return request(`/api/admin/projects/${id}`);
+}
+
+export function createProject(projectData) {
+  return request(`/api/admin/projects`, {
+    method: "POST",
+    body: projectData,
+  });
+}
+
+export function updateProject(id, projectData) {
+  return request(`/api/admin/projects/${id}`, {
+    method: "PUT",
+    body: projectData,
+  });
+}
+
+export function deleteProject(id) {
+  return request(`/api/admin/projects/${id}`, { method: "DELETE" });
+}
+
+// Project Tags API
+export async function getProjectTags({ search = "", limit = 100 } = {}) {
+  const params = new URLSearchParams();
+  if (search) params.set("search", search);
+  if (limit) params.set("limit", limit);
+  return request(`/api/project-tags?${params.toString()}`);
+}
+
+export function getProjectTag(id) {
+  return request(`/api/project-tags/${id}`);
+}
+
+export function createProjectTag(tagData) {
+  return request(`/api/admin/project-tags`, {
+    method: "POST",
+    body: tagData,
+  });
+}
+
+export function updateProjectTag(id, tagData) {
+  return request(`/api/admin/project-tags/${id}`, {
+    method: "PUT",
+    body: tagData,
+  });
+}
+
+export function deleteProjectTag(id) {
+  return request(`/api/admin/project-tags/${id}`, { method: "DELETE" });
+}
+
+// Projects API object for easier import
+export const projectsAPI = {
+  // Public APIs
+  getProjects: getPublicProjects,
+  getProject: getPublicProject,
+  getFeaturedProjects,
+  getProjectsByCategory,
+  getProjectsByTag,
+  getProjectsByType,
+  getProjectsByStatus,
+  searchProjects,
+  getRelatedProjects,
+  
+  // Admin APIs
+  getAdminProjects,
+  getAdminProject,
+  createProject,
+  updateProject,
+  deleteProject,
+  
+  // Categories & Tags
+  getCategories,
+  getCategory,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getTags: getProjectTags,
+  getTag: getProjectTag,
+  createTag: createProjectTag,
+  updateTag: updateProjectTag,
+  deleteTag: deleteProjectTag,
+};

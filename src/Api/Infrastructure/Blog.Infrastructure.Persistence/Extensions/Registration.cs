@@ -1,8 +1,9 @@
 ﻿using System;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Infrastructure.Persistence.Context;
 using Blog.Infrastructure.Persistence.EntityConfigurations.Interceptors;
 using Blog.Infrastructure.Persistence.Repository;
+using Blog.Infrastructure.Persistence.Repostory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,12 @@ public static class Registration
 		//SeedData.SeedAsync(configuration).GetAwaiter().GetResult();
 
 	services.AddScoped<IUserRepository, UserRepository>();
+	services.AddScoped<IPostRepository, PostRepository>();
+	services.AddScoped<ICategoryRepository, CategoryRepository>();
+	services.AddScoped<ITagRepository, TagRepository>();
+	services.AddScoped<INewsRepository, NewsRepository>();
+	services.AddScoped<IProjectRepository, ProjectRepository>();
+	services.AddScoped<IProjectTagRepository, ProjectTagRepository>();
 	services.AddScoped(typeof(IGenericRepository<>), typeof(Blog.Infrastructure.Persistence.Repostory.GenericRepository<>));
 		// Map DbContext -> EntityContext for repositories expecting DbContext
 		services.AddScoped<DbContext>(sp => sp.GetRequiredService<EntityContext>());

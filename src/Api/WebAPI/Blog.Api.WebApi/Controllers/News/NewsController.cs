@@ -1,5 +1,7 @@
 using Blog.Common.Models.Queries.News;
-using Blog.Common.Models.RequestModels.News;
+using Blog.Api.Application.Features.Commands.News.CreateNews;
+using Blog.Api.Application.Features.Commands.News.UpdateNews;
+using Blog.Api.Application.Features.Commands.News.DeleteNews;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +50,7 @@ namespace Blog.Api.WebApi.Controllers.News
 
         // Public by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<NewsListItemViewModel?>> GetById(Guid id)
+        public async Task<ActionResult<NewsDetailViewModel?>> GetById(Guid id)
         {
             var result = await _mediator.Send(new Blog.Api.Application.Features.Queries.News.GetNewsById.GetNewsByIdQuery
             {
@@ -62,13 +64,13 @@ namespace Blog.Api.WebApi.Controllers.News
         // Admin create
     [HttpPost]
     [Authorize] // TODO: Eğer test için anonime açmak isterseniz geçici olarak [AllowAnonymous] ekleyin
-        public async Task<ActionResult<NewsListItemViewModel>> Create([FromBody] CreateNewsCommand command)
+        public async Task<ActionResult<NewsDetailViewModel>> Create([FromBody] CreateNewsCommand command)
         {
             try
             {
                 var created = await _mediator.Send(command);
                 // Invalidate list cache (simple approach: clear all keys via prefix not directly supported; rely on short TTL)
-                return CreatedAtAction(nameof(GetById), new { id = created.ID }, created);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
             }
             catch (InvalidOperationException dupEx)
             {
@@ -83,7 +85,7 @@ namespace Blog.Api.WebApi.Controllers.News
         // Admin update
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult<NewsListItemViewModel>> Update(Guid id, [FromBody] UpdateNewsCommand command)
+        public async Task<ActionResult<NewsDetailViewModel>> Update(Guid id, [FromBody] UpdateNewsCommand command)
         {
             if (id != command.Id) return BadRequest("ID uyuşmuyor");
             try
@@ -106,7 +108,7 @@ namespace Blog.Api.WebApi.Controllers.News
         [Authorize]
         public async Task<ActionResult> Delete(Guid id)
         {
-            var success = await _mediator.Send(new DeleteNewsCommand { Id = id });
+            var success = await _mediator.Send(new DeleteNewsCommand(id));
             if (!success) return NotFound();
             return NoContent();
         }

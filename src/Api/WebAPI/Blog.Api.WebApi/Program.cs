@@ -142,25 +142,20 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Apply migrations and seed on startup
+// Apply migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     try
     {
-    var ctx = scope.ServiceProvider.GetRequiredService<Blog.Infrastructure.Persistence.Context.EntityContext>();
-    await ctx.Database.MigrateAsync();
-    var startupLogger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>().CreateLogger("Startup");
-    startupLogger.LogInformation("Database migrated successfully");
-
-    // Seed using the dedicated seeder
-    var seeder = new Blog.Infrastructure.Persistence.Context.SeedData();
-    await seeder.SeedAsync(builder.Configuration);
-    startupLogger.LogInformation("Seeding completed");
+        var ctx = scope.ServiceProvider.GetRequiredService<Blog.Infrastructure.Persistence.Context.EntityContext>();
+        await ctx.Database.MigrateAsync();
+        var startupLogger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>().CreateLogger("Startup");
+        startupLogger.LogInformation("Database migrated successfully");
     }
     catch (Exception ex)
     {
         var logger = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>().CreateLogger("Startup");
-        logger.LogError(ex, "Migration/Seeding failed");
+        logger.LogError(ex, "Migration failed");
         throw;
     }
 }

@@ -1,5 +1,5 @@
-﻿using Blog.Api.Application.Interfaces.Infrastructure.Utility.Logger;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Application.Interfaces.Infrastructure.Utility.Logger;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Infrastructure;
 using Blog.Common.Models.Event.User;
 using Blog.Common.Models.RequestModels.User;

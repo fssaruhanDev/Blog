@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Blog.Common\Blog.Common.csproj" />
+    <ProjectReference Include="..\..\Core\Blog.Api.Application\Blog.Api.Application.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Blog.Infrastructure.Persistence\Blog.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Blog.Infrastructure.Security\Blog.Infrastructure.Security.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Blog.Infrastructure.Utilities\Blog.Infrastructure.Utilities.csproj" />

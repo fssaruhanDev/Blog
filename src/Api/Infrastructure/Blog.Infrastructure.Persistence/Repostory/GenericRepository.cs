@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Api.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -170,7 +170,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEnt
         return Get(predicate, noTracking, includes).FirstOrDefaultAsync();
     }
 
-    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> predicate, bool noTracking = true, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, params Expression<Func<TEntity, object>>[] includes)
+    public virtual async Task<List<TEntity>> GetList(Expression<Func<TEntity, bool>> predicate, bool noTracking = true, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, params Expression<Func<TEntity, object>>[] includes)
     {
         IQueryable<TEntity> query = entity;
 

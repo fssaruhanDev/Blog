@@ -30,6 +30,7 @@ import "../styles/components/Navbar.css";
 const NAVIGATION_ITEMS = [
   { path: '/', label: 'ANA SAYFA' },
   { path: '/about', label: 'HAKKIMDA' },
+  { path: '/projects', label: 'PROJELER' },
   { path: '/blog', label: 'BLOG' }
 ];
 
@@ -116,17 +117,16 @@ export default function Navbar() {
       className={`navbar ${isScrolled ? 'scrolled' : ''}`}
       elevation={0}
       sx={{
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(20px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(120%)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'transparent !important',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         transition: 'all 0.3s ease',
+        boxShadow: 'none',
         ...(isScrolled && {
-          background: 'linear-gradient(90deg, rgba(247, 109, 85, 0.9) 0%, rgba(248, 154, 136, 0.9) 100%)',
-          backdropFilter: 'blur(20px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(120%)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          background: 'rgba(255, 255, 255, 0.05) !important',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
         })
       }}
     >

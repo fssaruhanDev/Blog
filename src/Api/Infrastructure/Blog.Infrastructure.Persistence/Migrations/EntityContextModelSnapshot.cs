@@ -147,6 +147,13 @@ namespace Blog.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -156,12 +163,21 @@ namespace Blog.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int?>("Order")
+                    b.Property<int>("Order")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("ParentId")
@@ -592,6 +608,8 @@ namespace Blog.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("PostId");
+
                     b.ToTable("post_categories", "dbo");
                 });
 
@@ -664,6 +682,170 @@ namespace Blog.Infrastructure.Persistence.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("post_tags", "dbo");
+                });
+
+            modelBuilder.Entity("Blog.Api.Domain.Models.Project", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DemoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FeaturedImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GithubUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("Images")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProjectUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TechnologiesUsed")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isModified")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Projects", "dbo");
+                });
+
+            modelBuilder.Entity("Blog.Api.Domain.Models.ProjectCategory", b =>
+                {
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("project_categories", "dbo");
+                });
+
+            modelBuilder.Entity("Blog.Api.Domain.Models.ProjectTag", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isModified")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ProjectTags", "dbo");
                 });
 
             modelBuilder.Entity("Blog.Api.Domain.Models.Reaction", b =>
@@ -1061,6 +1243,13 @@ namespace Blog.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1069,6 +1258,15 @@ namespace Blog.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1228,6 +1426,50 @@ namespace Blog.Infrastructure.Persistence.Migrations
                     b.HasIndex("PostId", "CreatedDate");
 
                     b.ToTable("views", "dbo");
+                });
+
+            modelBuilder.Entity("ProjectProjectTag", b =>
+                {
+                    b.Property<Guid>("ProjectTagsID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectsID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProjectTagsID", "ProjectsID");
+
+                    b.HasIndex("ProjectsID");
+
+                    b.ToTable("ProjectProjectTag", "dbo");
+                });
+
+            modelBuilder.Entity("Blog.Api.Domain.Models.ProjectCategory", b =>
+                {
+                    b.HasOne("Blog.Api.Domain.Models.Project", null)
+                        .WithMany("ProjectCategories")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectProjectTag", b =>
+                {
+                    b.HasOne("Blog.Api.Domain.Models.ProjectTag", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectTagsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Blog.Api.Domain.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Blog.Api.Domain.Models.Project", b =>
+                {
+                    b.Navigation("ProjectCategories");
                 });
 #pragma warning restore 612, 618
         }

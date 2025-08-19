@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Domain.Interfaces.Repositories;
 using DomainPost = Blog.Api.Domain.Models.Post;
 using Blog.Common.Models.Queries.Post;
 using MediatR;

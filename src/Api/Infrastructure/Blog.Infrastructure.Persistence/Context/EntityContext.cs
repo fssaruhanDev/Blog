@@ -31,30 +31,33 @@ namespace Blog.Infrastructure.Persistence.Context
 
     public DbSet<User> Users { get; set; }
     public DbSet<AuditLogEntity> AuditLogs { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Post> Posts { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Category> Categories { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Tag> Tags { get; set; }
-    public DbSet<Blog.Api.Domain.Models.PostCategory> PostCategories { get; set; }
-    public DbSet<Blog.Api.Domain.Models.PostTag> PostTags { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Comment> Comments { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Media> Media { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Attachment> Attachments { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Reaction> Reactions { get; set; }
-    public DbSet<Blog.Api.Domain.Models.SeoMeta> SeoMeta { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Slug> Slugs { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Redirect> Redirects { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Role> Roles { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Permission> Permissions { get; set; }
-    public DbSet<Blog.Api.Domain.Models.UserRole> UserRoles { get; set; }
-    public DbSet<Blog.Api.Domain.Models.RolePermission> RolePermissions { get; set; }
-    public DbSet<Blog.Api.Domain.Models.RefreshToken> RefreshTokens { get; set; }
-    public DbSet<Blog.Api.Domain.Models.View> Views { get; set; }
-    public DbSet<Blog.Api.Domain.Models.PostDailyMetric> PostDailyMetrics { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Bookmark> Bookmarks { get; set; }
-    public DbSet<Blog.Api.Domain.Models.ReadingList> ReadingLists { get; set; }
-    public DbSet<Blog.Api.Domain.Models.ReadingListItem> ReadingListItems { get; set; }
-    public DbSet<Blog.Api.Domain.Models.News> News { get; set; }
-    public DbSet<Blog.Api.Domain.Models.Page> Pages { get; set; }
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<PostCategory> PostCategories { get; set; }
+    public DbSet<PostTag> PostTags { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<Media> Media { get; set; }
+    public DbSet<Attachment> Attachments { get; set; }
+    public DbSet<Reaction> Reactions { get; set; }
+    public DbSet<SeoMeta> SeoMeta { get; set; }
+    public DbSet<Slug> Slugs { get; set; }
+    public DbSet<Redirect> Redirects { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<View> Views { get; set; }
+    public DbSet<PostDailyMetric> PostDailyMetrics { get; set; }
+    public DbSet<Bookmark> Bookmarks { get; set; }
+    public DbSet<ReadingList> ReadingLists { get; set; }
+    public DbSet<ReadingListItem> ReadingListItems { get; set; }
+    public DbSet<News> News { get; set; }
+    public DbSet<Page> Pages { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectCategory> ProjectCategories { get; set; }
+    public DbSet<ProjectTag> ProjectTags { get; set; }
 
 
 

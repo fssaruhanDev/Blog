@@ -1,4 +1,4 @@
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.Queries;
 using Blog.Common.Models.Queries.Pages;
 using MediatR;

@@ -84,6 +84,24 @@ export default function AdminLayout() {
                     </Link>
                   </li>
                   <li className="nav-item">
+                    <Link to="/admin/projects" className={`nav-link ${location.pathname.startsWith("/admin/projects") ? "active" : ""}`}>
+                      <i className="nav-icon fas fa-folder-open"></i>
+                      <p>Projects</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/admin/categories" className={`nav-link ${location.pathname.startsWith("/admin/categories") ? "active" : ""}`}>
+                      <i className="nav-icon fas fa-tags"></i>
+                      <p>Kategoriler</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/admin/tags" className={`nav-link ${location.pathname.startsWith("/admin/tags") ? "active" : ""}`}>
+                      <i className="nav-icon fas fa-hashtag"></i>
+                      <p>Etiketler</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
                     <Link to="/admin/achievements" className={`nav-link ${location.pathname.startsWith("/admin/achievements") ? "active" : ""}`}>
                       <i className="nav-icon fas fa-trophy"></i>
                       <p>Achievements</p>

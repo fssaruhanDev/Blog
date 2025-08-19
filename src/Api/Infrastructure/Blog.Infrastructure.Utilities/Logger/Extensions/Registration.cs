@@ -1,5 +1,5 @@
 ﻿using Blog.Api.Application.Interfaces.Infrastructure.Utility.Logger;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Infrastructure.Utilities.Logger.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

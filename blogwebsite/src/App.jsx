@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import About from './selections/About/About';
 import Blog from './selections/Blog/Blog';
 import BlogDetails from './selections/Blog/BlogDetails';
+import Projects from './selections/Projects/Projects';
 import Home from './selections/Home/Home';
 import Login from './selections/Auth/Login';
 import ROUTES from './constants/routes';
@@ -15,8 +16,11 @@ import News from './admin/pages/News/News';
 import NewsEditor from './admin/pages/News/NewsEditor';
 import AdminBlog from './admin/pages/Blog/Blog';
 import BlogEditor from './admin/pages/Blog/BlogEditor';
+import Categories from './admin/pages/Categories/Categories';
+import Tags from './admin/pages/Tags/Tags';
 import Achievements from './admin/pages/Achievements/Achievements';
 import Pages from './admin/pages/Pages/Pages';
+import { AdminProjects, AdminProjectForm } from './admin/pages/Projects';
 import { setAuthRedirectHandler } from './services/api';
 
 function App() {
@@ -38,6 +42,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogDetails />} />
           <Route path="/login" element={<Login />} />
@@ -51,6 +56,11 @@ function App() {
               <Route path="blog" element={<AdminBlog />} />
               <Route path="blog/new" element={<BlogEditor />} />
               <Route path="blog/:id/edit" element={<BlogEditor />} />
+              <Route path="projects" element={<AdminProjects />} />
+              <Route path="projects/new" element={<AdminProjectForm />} />
+              <Route path="projects/:id/edit" element={<AdminProjectForm />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="tags" element={<Tags />} />
               <Route path="achievements" element={<Achievements />} />
               <Route path="pages" element={<Pages />} />
             </Route>

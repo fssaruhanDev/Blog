@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using FluentValidation;
 using Blog.Api.Application.Interfaces.infractucture.Utility.Cache;

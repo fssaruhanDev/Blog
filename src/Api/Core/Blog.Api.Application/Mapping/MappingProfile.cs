@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AutoMapper;
 using Blog.Api.Domain.Models;
 using Blog.Common.Models.Queries;

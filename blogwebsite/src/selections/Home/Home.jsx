@@ -63,13 +63,13 @@ const ContentCard = React.memo(({ item, type, onClick }) => {
   const date = item.publishedAt || item.PublishedAt || item.createdDate || item.CreatedDate;
   
   const handleImageError = useCallback((e) => {
-    e.target.src = '/images/default-placeholder.jpg';
+    e.target.src = '/images/default-placeholder.png';
   }, []);
   
   return (
     <article className="content-card" onClick={onClick}>
       <img 
-        src={imageUrl} 
+        src={imageUrl || '/images/default-placeholder.png'} 
         alt={title}
         className="card-image"
         onError={handleImageError}

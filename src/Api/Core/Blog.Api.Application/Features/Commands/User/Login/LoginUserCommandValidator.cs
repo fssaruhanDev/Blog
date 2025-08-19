@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FluentValidation;
 using Blog.Common.Models.RequestModels;
 using Microsoft.IdentityModel.Tokens;

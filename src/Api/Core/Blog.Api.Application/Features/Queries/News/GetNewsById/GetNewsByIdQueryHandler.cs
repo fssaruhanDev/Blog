@@ -1,41 +1,63 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Blog.Api.Application.Interfaces.Repostrories;
+using Blog.Api.Application.Interfaces.Infrastructure.Utility.Logger;
+using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.Queries.News;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using DomainNews = Blog.Api.Domain.Models.News;
+using System.Collections.Generic;
 
 namespace Blog.Api.Application.Features.Queries.News.GetNewsById
 {
-    public class GetNewsByIdQueryHandler : IRequestHandler<GetNewsByIdQuery, NewsListItemViewModel>
+    public class GetNewsByIdQueryHandler : IRequestHandler<GetNewsByIdQuery, NewsDetailViewModel>
     {
-        private readonly IGenericRepository<DomainNews> _repo;
-        public GetNewsByIdQueryHandler(IGenericRepository<DomainNews> repo)
+        private readonly INewsRepository _newsRepository;
+        private readonly ILoggerService _loggerService;
+        
+        public GetNewsByIdQueryHandler(INewsRepository newsRepository, ILoggerService loggerService)
         {
-            _repo = repo;
+            _newsRepository = newsRepository;
+            _loggerService = loggerService;
         }
 
-        public async Task<NewsListItemViewModel> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<NewsDetailViewModel> Handle(GetNewsByIdQuery request, CancellationToken cancellationToken)
         {
-            var query = _repo.AsQueryable().Where(n => !n.isDeleted && n.ID == request.Id);
-            if (request.PublicOnly)
-                query = query.Where(n => n.Status == "published");
-
-            var n = await query.FirstOrDefaultAsync(cancellationToken);
-            if (n == null) return null!;
-
-            return new NewsListItemViewModel
+            var logProps = new Dictionary<string, object>
             {
-                ID = n.ID,
-                Title = n.Title,
-                Summary = n.Summary,
-                Status = n.Status,
-                CreatedDate = n.CreatedDate,
-                PublishedAt = n.PublishedAt,
-                SourceName = n.SourceName,
-                SourceUrl = n.SourceUrl,
-                Tags = n.Tags
+                ["NewsId"] = request.Id,
+                ["PublicOnly"] = request.PublicOnly
+            };
+
+            _loggerService.LogInformation("Fetching news by ID.", logProps);
+
+            var news = await _newsRepository.GetByIdAsync(request.Id);
+            
+            if (news == null || news.isDeleted)
+            {
+                _loggerService.LogWarning("News not found.", logProps);
+                return null!;
+            }
+
+            // Check public access restriction
+            if (request.PublicOnly && news.Status != "published")
+            {
+                _loggerService.LogWarning("News access denied: not published.", logProps);
+                return null!;
+            }
+
+            _loggerService.LogInformation("News fetched successfully.", logProps);
+
+            return new NewsDetailViewModel
+            {
+                Id = news.ID,
+                Title = news.Title,
+                Summary = news.Summary,
+                Status = news.Status,
+                CreatedAt = news.CreatedDate,
+                UpdatedAt = news.UpdatedDate ?? news.CreatedDate,
+                PublishedAt = news.PublishedAt,
+                SourceName = news.SourceName,
+                SourceUrl = news.SourceUrl,
+                Tags = news.Tags
             };
         }
     }

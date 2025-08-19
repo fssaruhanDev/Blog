@@ -1,4 +1,9 @@
-/* ================================================== */
+/* =================.navbar.scrolled {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}=========================== */
 /* NAVBAR COMPONENT STYLES - CLEAN & OPTIMIZED */
 /* ================================================== */
 
@@ -9,22 +14,20 @@
   right: 0;
   width: 100%;
   z-index: 1100;
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(20px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  background: transparent !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
   transition: all 0.3s ease;
   border: none;
   box-shadow: none;
   will-change: background, box-shadow;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .navbar.scrolled {
-  background: linear-gradient(90deg, rgba(247, 109, 85, 0.9) 0%, rgba(248, 154, 136, 0.9) 100%) !important;
-  backdrop-filter: blur(25px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
+  background: rgba(247, 109, 85, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* ================================================== */
@@ -33,9 +36,9 @@
 
 .navbar-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px; /* Daha geniş container */
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 3rem; /* Daha fazla padding */
   contain: layout style;
 }
 
@@ -47,6 +50,7 @@
   width: 100%;
   min-height: 64px;
   padding: 0 !important;
+  flex-wrap: nowrap;
 }
 
 /* Logo ve Navigation yan yana */
@@ -54,7 +58,7 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  margin-right: 3rem; /* Logo ile navigation arası boşluk */
+  margin-right: 4rem; /* Logo ile navigation arası daha fazla boşluk */
 }
 
 .navbar-logo img {
@@ -75,14 +79,20 @@
 .navbar-nav {
   display: flex !important; /* Force flex display */
   align-items: center;
-  gap: 2rem; /* Menüler arası boşluk */
+  gap: 3rem; /* Menüler arası daha fazla boşluk */
   contain: layout style;
+  white-space: nowrap;
 }
 
 /* Desktop'ta kesinlikle göster */
 @media (min-width: 992px) {
   .navbar-nav {
     display: flex !important;
+    flex-direction: row !important;
+  }
+  
+  .navbar-nav .MuiButton-root {
+    display: inline-flex !important;
   }
 }
 
@@ -123,7 +133,7 @@
 
 @media (max-width: 991px) {
   .navbar-container {
-    padding: 0 1rem;
+    padding: 0 1.5rem;
   }
   
   .navbar-logo {
@@ -131,7 +141,7 @@
   }
   
   .navbar-nav {
-    display: none;
+    display: none !important;
   }
   
   .navbar-actions .MuiButton-outlined {
