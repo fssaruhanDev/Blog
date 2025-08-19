@@ -1,98 +1,276 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
+import { logout } from "../services/api";
+
+// Material-UI Components
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Collapse
+} from "@mui/material";
+
+// Material-UI Icons
+import {
+  Menu as MenuIcon,
+  Close as CloseIcon,
+  Dashboard,
+  ExitToApp
+} from "@mui/icons-material";
+
+// Styles
+import "../styles/components/Navbar.css";
+
+// Navigation Configuration
+const NAVIGATION_ITEMS = [
+  { path: '/', label: 'ANA SAYFA' },
+  { path: '/about', label: 'HAKKIMDA' },
+  { path: '/blog', label: 'BLOG' }
+];
+
+const LOGO_PATH = "/FSSaruhan-white.png";
 
 export default function Navbar() {
+  // Hooks
   const location = useLocation();
   const navigate = useNavigate();
-  const isBlogDetailPage = location.pathname.startsWith("/blog/");
-
-  // Eski tasarım: sabit degrade bar, scroll efekt yok
+  
+  // State
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
-  // Tek açık tema (kurumsal) kullanılıyor.
 
-  useEffect(() => {
-    const handler = () => setToken(localStorage.getItem("auth_token"));
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
-
-  // Tema toggling tamamen kaldırıldı
-
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_user");
-    setToken(null);
-    navigate("/");
+  // Event Handlers
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setToken(null);
+      setAnchorEl(null);
+      navigate("/");
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
-  const textColor = "#ffffff";
+  const handleDropdownOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownClose = () => {
+    setAnchorEl(null);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
+  // Effects - Stable token management
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newToken = localStorage.getItem("auth_token");
+      setToken(newToken);
+    };
+    
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  // Throttled scroll handler to prevent flashing
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Helpers
+  const isActiveRoute = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   return (
-    <AppBar position="fixed" sx={{
-      background: 'var(--nav-gradient)',
-      boxShadow: '0 2px 10px -4px rgba(0,0,0,0.25)',
-      border: 'none'
-    }}>
-      <Toolbar
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          position: "relative",
-          height: "82px",
-          maxWidth: '1440px',
-          mx: 'auto',
-          width: '100%',
-        }}
-      >
-        {/* Logo */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <img src="/FSSaruhan-white.png" alt="Logo" style={{ height: 50 }} />
-        </Box>
-
-  {/* Menü */}
-        <Box
-          sx={{
-            flex:1,
-            display: "flex",
-            justifyContent:'center',
-            alignItems: "center",
-            gap: 3.2,
-          }}
+    <AppBar 
+      position="fixed" 
+      className={`navbar ${isScrolled ? 'scrolled' : ''}`}
+      elevation={0}
+      sx={{
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(20px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(120%)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+        transition: 'all 0.3s ease',
+        ...(isScrolled && {
+          background: 'linear-gradient(90deg, rgba(247, 109, 85, 0.9) 0%, rgba(248, 154, 136, 0.9) 100%)',
+          backdropFilter: 'blur(20px) saturate(120%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(120%)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+        })
+      }}
+    >
+      <div className="navbar-container">
+        <Toolbar 
+          className="navbar-toolbar" 
+          disableGutters
         >
-          {[
-            {to:'/', label:'Ana Sayfa', active: location.pathname==='/'},
-            {to:'/hakkimda', label:'Hakkımda', active: location.pathname.startsWith('/hakkimda')},
-            {to:'/blog', label:'Blog', active: location.pathname.startsWith('/blog')}
-          ].map(item => (
-            <Button key={item.to} component={Link} to={item.to}
-              sx={{
-                color: textColor,
-                fontSize:"0.95rem",
-                fontWeight:600,
-                position:'relative',
-                letterSpacing:.3,
-                '&:hover':{opacity:.9},
-                '&:after': item.active ? {content:'""', position:'absolute', left:10, right:10, bottom:-6, height:3, borderRadius:2, background:'#fff'} : {}
-              }}
-              className={item.active? 'active':''}
-            >{item.label}</Button>
-          ))}
+          
+          {/* Sol taraf: Logo + Navigation */}
+          <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+            {/* Logo Section */}
+            <Link to="/" className="navbar-logo" style={{ textDecoration: 'none' }}>
+              <img 
+                src={LOGO_PATH} 
+                alt="FS Saruhan Logo" 
+                style={{ 
+                  height: '36px',
+                  transition: 'transform 0.2s ease'
+                }} 
+              />
+            </Link>
 
-          {!token ? (
-  <Button component={Link} to="/login" variant="contained" sx={{ background:'var(--brand-primary)', '&:hover':{background:'#c13326'} }}>Giriş</Button>
-          ) : (
-  <Button onClick={handleLogout} variant="contained" sx={{ background:'var(--brand-primary)', '&:hover':{background:'#c13326'} }}>Çıkış</Button>
-          )}
-        </Box>
-    <Divider orientation="vertical" flexItem sx={{borderColor:'rgba(0,0,0,0.08)', mx:2, display:{xs:'none', md:'block'} }} />
-  {/* Tema ikonu kaldırıldı */}
-      </Toolbar>
+            {/* Desktop Navigation - Logo yanında */}
+            <nav className="navbar-nav">
+              {NAVIGATION_ITEMS.map((item) => (
+                <Button
+                  key={item.path}
+                  component={Link}
+                  to={item.path}
+                  className={`navbar-nav-item ${isActiveRoute(item.path) ? 'active' : ''}`}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </nav>
+          </div>
+
+          {/* User Actions - Sağ Taraf */}
+          <div className="navbar-actions">
+            {!token ? (
+              <Button 
+                component={Link} 
+                to="/login" 
+                variant="outlined"
+                className="navbar-login-btn"
+              >
+                GİRİŞ
+              </Button>
+            ) : (
+              <div className="navbar-user-menu">
+                <IconButton
+                  onClick={handleDropdownOpen}
+                  className="navbar-avatar-btn"
+                >
+                  <Avatar className="navbar-avatar">
+                    👤
+                  </Avatar>
+                </IconButton>
+                
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleDropdownClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  className="navbar-dropdown"
+                >
+                  <MenuItem 
+                    onClick={() => { handleNavigation('/admin'); handleDropdownClose(); }}
+                    className="navbar-dropdown-item"
+                  >
+                    <Dashboard sx={{ mr: 1, fontSize: '1rem' }} />
+                    Admin Paneli
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem 
+                    onClick={handleLogout}
+                    className="navbar-dropdown-item logout"
+                  >
+                    <ExitToApp sx={{ mr: 1, fontSize: '1rem' }} />
+                    Çıkış
+                  </MenuItem>
+                </Menu>
+              </div>
+            )}
+            
+            {/* Mobile Menu Toggle */}
+            <IconButton
+              onClick={toggleMobileMenu}
+              className="navbar-mobile-toggle"
+            >
+              {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
+          </div>
+        </Toolbar>
+
+        {/* Mobile Menu */}
+        <Collapse in={isMobileMenuOpen}>
+          <div className="navbar-mobile-menu">
+            {NAVIGATION_ITEMS.map((item) => (
+              <Button
+                key={item.path}
+                fullWidth
+                onClick={() => handleNavigation(item.path)}
+                className="navbar-mobile-item"
+              >
+                {item.label}
+              </Button>
+            ))}
+            
+            <Divider className="navbar-mobile-divider" />
+            
+            {token ? (
+              <>
+                <Button
+                  fullWidth
+                  onClick={() => handleNavigation('/admin')}
+                  className="navbar-mobile-item"
+                >
+                  <Dashboard sx={{ mr: 1 }} />
+                  Admin Paneli
+                </Button>
+                <Button
+                  fullWidth
+                  onClick={handleLogout}
+                  className="navbar-mobile-item"
+                >
+                  <ExitToApp sx={{ mr: 1 }} />
+                  Çıkış
+                </Button>
+              </>
+            ) : (
+              <Button
+                fullWidth
+                onClick={() => handleNavigation('/login')}
+                className="navbar-mobile-item"
+              >
+                GİRİŞ
+              </Button>
+            )}
+          </div>
+        </Collapse>
+      </div>
     </AppBar>
   );
 }

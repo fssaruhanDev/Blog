@@ -45,18 +45,8 @@
 }
 
 /* Bölüm başlığı (ikon + metin) */
-.section h2 { 
-  margin: 0 0 18px; 
-  font-size: 1.05rem; 
-  letter-spacing: .05em; 
-  text-transform: uppercase; 
-  color: var(--brand-primary); 
-  display: flex; 
-  align-items: center; 
-  gap: .55rem; 
-  font-weight: 700; 
-}
-.section h2 .emoji { font-size: 1rem; }
+.section h2 { margin:0 0 18px; font-size:1.05rem; letter-spacing:.05em; text-transform:uppercase; color:var(--brand-primary); display:flex; align-items:center; gap:.55rem; font-weight:700; }
+.section h2 .emoji { font-size:1rem; }
 
 /* Kart konteyneri – akışkan grid */
 .cards { 
@@ -84,51 +74,19 @@
   background: #fff4f1; 
   border: 2px solid #f76d55; 
   border-radius: 12px; 
+  padding: 16px 18px 20px; 
   box-shadow: 0 4px 12px -6px rgba(247,109,85,0.25); 
   position: relative; 
   display: flex; 
   flex-direction: column; 
-  gap: 0; 
+  gap: 8px; 
   transition: box-shadow .25s, transform .25s, border-color .25s; 
-  overflow: hidden;
 }
-
 .card:hover { 
   box-shadow: 0 8px 24px -8px rgba(247,109,85,0.35); 
   transform: translateY(-2px); 
   border-color: #e55a42; 
 }
-
-/* Kart resim alanı */
-.card-image {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  position: relative;
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .3s ease;
-}
-
-.card:hover .card-image img {
-  transform: scale(1.05);
-}
-
-/* Kart içerik alanı */
-.card-content {
-  padding: 16px 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-}
-
-/* Kart - resim olmayan durumlar için eski stil korunuyor */
-
 .card h3 { 
   margin: 0 0 6px; 
   font-size: 0.9rem; 
@@ -138,7 +96,6 @@
   line-height: 1.3;
   color: #d4342c;
 }
-
 .card small { 
   font-size: 0.65rem; 
   letter-spacing: 0.08em; 
@@ -148,7 +105,6 @@
   margin-bottom: 4px;
   color: #666;
 }
-
 .card p { 
   margin: 6px 0 8px; 
   font-size: 0.75rem; 
@@ -156,14 +112,9 @@
   flex: 1; 
   color: #444;
 }
+.card a { font-size:.68rem; border:0; color:var(--brand-primary); }
 
-.card a { 
-  font-size: .68rem; 
-  border: 0; 
-  color: var(--brand-primary); 
-}
-
-/* Kart üst sol renk göstergesi */
+/* Kart üst sol renk göstergesi - daha büyük */
 .card:before { 
   content: ""; 
   position: absolute; 
@@ -174,36 +125,19 @@
   border-radius: 4px; 
   background: var(--badge-orange); 
   box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-  z-index: 2;
 }
-
-.card.badge-green:before { background: var(--badge-green); }
-.card.badge-blue:before { background: var(--badge-blue); }
-.card.badge-pink:before { background: var(--badge-pink); }
-.card.badge-purple:before { background: var(--badge-purple); }
+.card.badge-green:before { background:var(--badge-green); }
+.card.badge-blue:before { background:var(--badge-blue); }
+.card.badge-pink:before { background:var(--badge-pink); }
+.card.badge-purple:before { background:var(--badge-purple); }
 
 /* Kart arka plan renkleri */
-.card.badge-green { 
-  background: #f0fdf4; 
-  border-color: var(--badge-green); 
-}
+.card.badge-green { background: #f0fdf4; border-color: var(--badge-green); }
+.card.badge-blue { background: #eff6ff; border-color: var(--badge-blue); }
+.card.badge-pink { background: #fdf2f8; border-color: var(--badge-pink); }
+.card.badge-purple { background: #faf5ff; border-color: var(--badge-purple); }
 
-.card.badge-blue { 
-  background: #eff6ff; 
-  border-color: var(--badge-blue); 
-}
-
-.card.badge-pink { 
-  background: #fdf2f8; 
-  border-color: var(--badge-pink); 
-}
-
-.card.badge-purple { 
-  background: #faf5ff; 
-  border-color: var(--badge-purple); 
-}
-
-/* Kart okuma butonu */
+/* Kart okuma butonu - ekran görüntüsündeki gibi daha büyük ve kırmızı */
 .read-more { 
   margin-top: 12px; 
   align-self: flex-start; 
@@ -220,34 +154,20 @@
   transition: all 0.2s ease; 
   text-transform: uppercase;
 }
-
 .read-more:hover { 
   background: #c53030 !important; 
   box-shadow: 0 6px 16px -4px rgba(220,68,68,0.5); 
   transform: translateY(-1px);
 }
-
 .read-more:active { 
   transform: translateY(0px); 
 }
+.home-container .read-more { background: var(--brand-primary); }
 
-.home-container .read-more { 
-  background: var(--brand-primary); 
-}
+/* Eski read-more ve emoji stilleri kaldırıldı / yeniden tanımlandı */
+.emoji { margin-right:6px; display:inline-block; }
 
-.emoji { 
-  margin-right: 6px; 
-  display: inline-block; 
-}
-
-@media (max-width: 600px) {
-  .card-content { 
-    padding: 12px 12px 14px; 
-  }
-  .card-image {
-    height: 160px;
-  }
-  .cards { 
-    gap: 16px; 
-  }
+@media (max-width:600px){
+  .card { padding:12px 12px 14px; }
+  .cards { gap:16px; }
 }

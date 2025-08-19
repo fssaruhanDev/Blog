@@ -19,8 +19,13 @@ export default function Login() {
       // API LoginUserViewModel: Token büyük harf gelebilir
       const token = res.token || res.Token;
       if (!token) throw new Error("Sunucudan token alınamadı");
+      
       localStorage.setItem("auth_token", token);
       localStorage.setItem("auth_user", JSON.stringify(res));
+      
+      // Trigger storage event for navbar update
+      window.dispatchEvent(new Event('storage'));
+      
       navigate("/admin");
     } catch (err) {
       setError(err.message || "Giriş başarısız");

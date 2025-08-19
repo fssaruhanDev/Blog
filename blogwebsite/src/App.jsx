@@ -1,4 +1,5 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import About from './selections/About/About';
@@ -16,10 +17,20 @@ import AdminBlog from './admin/pages/Blog/Blog';
 import BlogEditor from './admin/pages/Blog/BlogEditor';
 import Achievements from './admin/pages/Achievements/Achievements';
 import Pages from './admin/pages/Pages/Pages';
+import { setAuthRedirectHandler } from './services/api';
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  // Set up global auth redirect handler
+  useEffect(() => {
+    setAuthRedirectHandler((path) => {
+      navigate(path, { replace: true });
+    });
+  }, [navigate]);
+
   return (
     <>
       {!isAdmin && <Navbar />}

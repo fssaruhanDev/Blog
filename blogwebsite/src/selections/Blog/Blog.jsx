@@ -2,10 +2,11 @@ import { Box, Typography, Divider } from "@mui/material";
 import BlogCard from "./BlogCard";
 import FeaturedCard from "../FeaturedCard";
 import { useEffect, useState } from "react";
-import { getPosts } from "../../services/api";
+import { getPublicPosts, getFeaturedPosts } from "../../services/api";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
+  const [featuredPosts, setFeaturedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,8 +15,14 @@ export default function Blog() {
     async function load() {
       setLoading(true);
       try {
-        const resp = await getPosts({ page: 1, pageSize: 20, status: "published" });
-        if (!cancelled) setPosts(resp.items || resp.Items || []);
+        const [postsResp, featuredResp] = await Promise.all([
+          getPublicPosts({ page: 1, pageSize: 20 }), // Tüm published postlar
+          getFeaturedPosts({ page: 1, pageSize: 4 }) // Öne çıkan postlar
+        ]);
+        if (!cancelled) {
+          setPosts(postsResp.items || postsResp.Items || []);
+          setFeaturedPosts(featuredResp.items || featuredResp.Items || []);
+        }
       } catch (e) {
         if (!cancelled) setError(e.message);
       } finally {
@@ -26,7 +33,8 @@ export default function Blog() {
     return () => { cancelled = true; };
   }, []);
 
-  const featured = posts.slice(0, 2);
+  // Fallback: eğer featured posts yoksa normal postlardan ilk 2'sini al
+  const featured = featuredPosts.length > 0 ? featuredPosts : posts.slice(0, 2);
 
   return (
     <Box>

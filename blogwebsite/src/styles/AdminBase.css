@@ -1,3 +1,194 @@
+/* ADMIN PANEL ISOLATED STYLES */
+
+/* Admin container - tamamen izole et */
+.admin-container {
+  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Ana site stillerini sıfırla - admin container içinde */
+.admin-container * {
+  box-sizing: border-box;
+}
+
+/* Navbar'ı görünür yap ve ana site stillerini etkisiz hale getir */
+.admin-container .main-header.navbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #dee2e6 !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: 250px !important;
+  z-index: 1030 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 3.5rem !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,.08) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.admin-container .navbar-nav {
+  display: flex !important;
+  align-items: center !important;
+  height: 3.5rem !important;
+  margin: 0 !important;
+  padding: 0 1rem !important;
+}
+
+.admin-container .nav-link {
+  color: #495057 !important;
+  padding: 0.5rem 1rem !important;
+  text-decoration: none !important;
+  border-radius: 0.25rem !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.admin-container .nav-link:hover {
+  color: #007bff !important;
+  background-color: #f8f9fa !important;
+}
+
+/* Sidebar stilleri */
+.admin-container .main-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 250px !important;
+  z-index: 1040 !important;
+  background-color: #343a40 !important;
+}
+
+/* Brand link - logo büyütüldü */
+.admin-container .admin-brand-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.75rem !important;
+  border-bottom: 1px solid #4b545c !important;
+  text-decoration: none !important;
+  height: 3.5rem !important;
+}
+
+.admin-container .admin-brand-image {
+  width: 180px !important;
+  height: 180px !important;
+  object-fit: contain !important;
+  /* Yuvarlak effect'i kaldır */
+  border-radius: 0 !important;
+  opacity: 1 !important;
+}
+
+/* Sidebar içeriği - AdminLTE orijinal renklerini koru */
+.admin-container .admin-sidebar {
+  height: calc(100vh - 3.5rem) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+}
+
+/* AdminLTE sidebar menü renklerini koru */
+.admin-container .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
+  color: #c2c7d0 !important;
+}
+
+.admin-container .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+  background-color: #454d55 !important;
+  color: #ffffff !important;
+}
+
+.admin-container .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+/* User panel stillerini koru */
+.admin-container .user-panel .info > a {
+  color: #c2c7d0 !important;
+  text-decoration: none !important;
+}
+
+.admin-container .user-panel .info > a:hover {
+  color: #ffffff !important;
+}
+
+/* Scroll'ları kaldır */
+.admin-container .admin-sidebar::-webkit-scrollbar {
+  width: 0px !important;
+  background: transparent !important;
+}
+
+.admin-container .admin-sidebar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* Content wrapper - navbar ile kartlar arasında boşluk */
+.admin-container .admin-content-wrapper {
+  margin-left: 250px !important;
+  margin-top: 3.5rem !important;
+  padding: 1rem !important;
+  min-height: calc(100vh - 3.5rem) !important;
+  background-color: #f4f6f9 !important;
+}
+
+/* Mobile responsive - hamburger button çalışması */
+@media (max-width: 767.98px) {
+  .admin-container .main-header.navbar {
+    left: 0 !important;
+  }
+  
+  .admin-container .main-sidebar {
+    transform: translateX(-250px) !important;
+    transition: transform 0.3s ease !important;
+  }
+  
+  .admin-container.sidebar-open .main-sidebar {
+    transform: translateX(0) !important;
+  }
+  
+  .admin-container .admin-content-wrapper {
+    margin-left: 0 !important;
+  }
+}
+
+/* Desktop'ta da hamburger button çalışması için */
+@media (min-width: 768px) {
+  .admin-container.sidebar-open .main-sidebar {
+    transform: translateX(0) !important;
+  }
+  
+  .admin-container.sidebar-collapsed .main-sidebar {
+    transform: translateX(-250px) !important;
+    transition: transform 0.3s ease !important;
+  }
+  
+  .admin-container.sidebar-collapsed .main-header.navbar {
+    left: 0 !important;
+    transition: left 0.3s ease !important;
+  }
+  
+  .admin-container.sidebar-collapsed .admin-content-wrapper {
+    margin-left: 0 !important;
+    transition: margin-left 0.3s ease !important;
+  }
+}
+
+/* Hamburger button hover effect */
+.admin-container .nav-link:hover {
+  color: #007bff !important;
+  background-color: #f8f9fa !important;
+}
+
 /* Shared admin design system extracted from News page */
 
 :root {

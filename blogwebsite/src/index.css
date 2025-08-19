@@ -1,38 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+/* Import global theme system */
+@import './styles/globals.css';
 
-/* Varsayılan açık (bej / turuncu kurumsal) */
-/* Tema – ekran görüntüsündeki daha yumuşak açık zemin + hafif sınırlar */
-:root {
-  --bg: #fff3ed; /* daha belirgin açık bej/pembe */
-  --text: #1a1a1a;
-  --surface: #ffffff;
-  --surface-alt: #fff9f6; /* kart içi çok hafif ton */
-  --border: #edc9b9; /* ince yumuşak sınır */
-  --code-bg: #2d2d2d;
-  --code-inline-bg: #272b33;
-  --brand-primary: #d33a2c; /* sabit ana */
-  --brand-accent: #ff7e5f;
-  --brand-accent-2: #feb47b;
-  --nav-gradient: linear-gradient(90deg,#d33a2c 0%, #ea5138 38%, #ff7e5f 72%, #feb47b 100%);
-  --shadow-card: 0 2px 6px -2px rgba(0,0,0,0.06);
-  --shadow-card-hover: 0 4px 14px -6px rgba(0,0,0,0.18);
-  --badge-green: #21a179;
-  --badge-orange: #ff9d2e;
-  --badge-blue: #2d92ff;
-  --badge-pink: #ff5d8d;
-  --badge-purple: #7d4dff;
-}
-
-/* Koyu tema (isteğe bağlı) */
-
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg) !important; /* arka plan zorla */
-  color: var(--text);
-  font-family: 'Inter', sans-serif !important;
-  transition: background-color .35s ease, color .35s ease;
-}
+/* Legacy styles - will be gradually migrated */
 
 /* Global buton yardımcı sınıfı */
 .btn-primary { background: var(--brand-primary); color:#fff; border:0; border-radius:4px; font-weight:600; cursor:pointer; padding:6px 14px; font-size:.75rem; letter-spacing:.4px; box-shadow:0 3px 10px -4px rgba(0,0,0,0.25); transition: background .25s, box-shadow .25s, transform .2s; }

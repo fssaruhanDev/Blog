@@ -9,7 +9,7 @@ using Blog.Api.Application.Features.Queries.Post.GetPostById;
 namespace Blog.Api.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/posts")]
+    [Route("api/admin/posts")]
     public class PostsController : ControllerBase
     {
         private readonly IMediator _mediator;

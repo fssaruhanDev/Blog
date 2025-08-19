@@ -11,6 +11,7 @@ namespace Blog.Common.Models.Queries.Post
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime? PublishedAt { get; set; }
-    public string? CoverImageUrl { get; set; }
+        public bool IsFeatured { get; set; }
+        public string? CoverImageUrl { get; set; }
     }
 }

@@ -1,0 +1,227 @@
+/* ================================================== */
+/* GLOBAL THEME SYSTEM - REFACTORED */
+/* ================================================== */
+
+/* CSS Variables - Tüm renkler ve değerler burada */
+:root {
+  /* Brand Colors */
+  --primary-gradient: linear-gradient(90deg, #f76d55 0%, #f89a88 100%);
+  --primary-color: #f76d55;
+  --primary-light: #f89a88;
+  --primary-dark: #e55a42;
+  
+  /* Background & Surface */
+  --bg-primary: #f9f7f4;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #fefefe;
+  --surface-overlay: rgba(255, 255, 255, 0.1);
+  
+  /* Text Colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --text-white: #ffffff;
+  
+  /* Borders & Shadows */
+  --border-light: rgba(233,206,195,0.5);
+  --border-white: rgba(255,255,255,0.2);
+  --shadow-light: 0 4px 12px -6px rgba(0,0,0,0.08);
+  --shadow-medium: 0 8px 24px -8px rgba(0,0,0,0.15);
+  --shadow-navbar: 0 4px 20px rgba(0,0,0,0.1);
+  
+  /* Navbar Specific */
+  --navbar-height: 64px;
+  --navbar-backdrop: blur(10px);
+  --navbar-transparent: transparent;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Typography */
+  --font-family: 'Inter', 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Z-Index Scale */
+  --z-navbar: 1000;
+  --z-dropdown: 1010;
+  --z-modal: 1020;
+  --z-tooltip: 1030;
+}
+
+/* ================================================== */
+/* GLOBAL RESET & BASE STYLES */
+/* ================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-top: 64px; /* Navbar height offset */
+}
+
+/* Main Content Layout */
+.main-content {
+  min-height: calc(100vh - 64px);
+  position: relative;
+}
+
+/* ================================================== */
+/* UTILITY CLASSES */
+/* ================================================== */
+
+/* Text Utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-light { color: var(--text-light); }
+.text-white { color: var(--text-white); }
+
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-md { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+
+/* Spacing Utilities */
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+
+/* Layout Utilities */
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-col { display: flex; flex-direction: column; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-lg); }
+
+/* ================================================== */
+/* COMPONENT BASE STYLES */
+/* ================================================== */
+
+/* Button Base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 6px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: var(--text-white);
+  box-shadow: var(--shadow-light);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-white);
+  border: 1px solid var(--border-white);
+}
+
+.btn-outline:hover {
+  background: var(--surface-overlay);
+  border-color: var(--text-white);
+}
+
+/* Card Base */
+.card {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-medium);
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+/* Selection Styles */
+::selection {
+  background: var(--primary-color);
+  color: var(--text-white);
+}
+
+/* ================================================== */
+/* RESPONSIVE BREAKPOINTS */
+/* ================================================== */
+
+/* Mobile First Approach */
+@media (min-width: 640px) {
+  .container { padding: 0 var(--spacing-xl); }
+}
+
+@media (min-width: 768px) {
+  .container { padding: 0 var(--spacing-xxl); }
+}
+
+@media (min-width: 1024px) {
+  .container { max-width: 1200px; }
+}
+
+@media (min-width: 1280px) {
+  .container { max-width: 1400px; }
+}

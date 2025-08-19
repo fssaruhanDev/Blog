@@ -6,7 +6,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import 'highlight.js/styles/github-dark.css';
 import blogPosts from './data/BlogData'; // fallback static
-import { getPost, getComments, addComment } from '../../services/api';
+import { getPublicPost, getComments, addComment } from '../../services/api';
 import "../../styles/BlogDetails.css";
 
 const BlogDetails = () => {
@@ -23,7 +23,7 @@ const BlogDetails = () => {
     let cancelled = false;
     (async () => {
       try {
-        const resp = await getPost(id);
+        const resp = await getPublicPost(id); // Public API kullan
         try { console.log('[BlogDetails] Post API raw:', resp); window.__rawPost = resp; } catch {}
         if (!cancelled && resp) {
           const loaded = {
@@ -60,32 +60,49 @@ const BlogDetails = () => {
   useEffect(() => {
     // Navbar için kurumsal degrade zorlaması & okuma ilerleme çubuğu
     document.body.classList.add('reading-mode');
+    
     const onScroll = () => {
       const doc = document.documentElement;
       const scrollTop = doc.scrollTop || document.body.scrollTop;
       const scrollHeight = doc.scrollHeight - doc.clientHeight;
       const p = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
       setProgress(p);
-      // Scrollspy: aktif başlık
-      const headingsEls = [...document.querySelectorAll('.blog-content h1, .blog-content h2, .blog-content h3')];
-      const scrollPos = window.scrollY + 120; // offset navbar
-      let currentId = null;
-      for(const h of headingsEls){
-        if(h.offsetTop <= scrollPos) currentId = h.id;
-      }
-      if(currentId){
-        document.querySelectorAll('.toc-list a').forEach(a=>{
-          if(a.getAttribute('href') === '#'+currentId) a.classList.add('active'); else a.classList.remove('active');
-        });
-      }
     };
+
+    // Intersection Observer for TOC
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.id;
+          const tocLink = document.querySelector(`a[href="#${id}"]`);
+          if (tocLink) {
+            if (entry.isIntersecting) {
+              document.querySelectorAll('.toc-list a').forEach(a => a.classList.remove('active'));
+              tocLink.classList.add('active');
+            }
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -60% 0px' }
+    );
+
+    // Observe headings after a short delay to ensure they're rendered
+    const observeHeadings = () => {
+      const headings = document.querySelectorAll('.blog-content h1, .blog-content h2, .blog-content h3');
+      headings.forEach(heading => observer.observe(heading));
+    };
+
+    setTimeout(observeHeadings, 500);
+    
     window.addEventListener('scroll', onScroll);
     onScroll();
+    
     return () => {
       document.body.classList.remove('reading-mode');
       window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
     };
-  }, []);
+  }, [post]);
 
   // Extract headings effect (supports # to ### + <h1-3>)
   useEffect(()=>{
@@ -98,16 +115,27 @@ const BlogDetails = () => {
       .replace(/ş/g,'s')
       .replace(/ö/g,'o')
       .replace(/ç/g,'c')
+      .replace(/&nbsp;/g,' ')
+      .replace(/\u00A0/g,' ')
       .replace(/[^a-z0-9\s-]/g,'')
       .trim()
-      .replace(/\s+/g,'-');
+      .replace(/\s+/g,'-')
+      .replace(/-+/g,'-');
     const hs = [];
     // HTML headings h1-h3
     const htmlMatches = [...post.content.matchAll(/<h([1-3])[^>]*>(.*?)<\/h[1-3]>/gi)];
-    htmlMatches.forEach(m=>{ const txt = m[2].replace(/<[^>]+>/g,'').trim(); if(txt) hs.push({ level: parseInt(m[1],10), text: txt, id: slugify(txt) }); });
+    htmlMatches.forEach(m=>{ 
+      const txt = m[2].replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/\u00A0/g,' ').trim(); 
+      if(txt) hs.push({ level: parseInt(m[1],10), text: txt, id: slugify(txt) }); 
+    });
     // Markdown headings # .. ###
     const mdMatches = [...post.content.matchAll(/^(#{1,3})\s+(.+)$/gm)];
-    mdMatches.forEach(m=>{ const level = m[1].length; const raw = m[2].replace(/#+$/,'').trim(); const id = slugify(raw); hs.push({ level, text: raw, id }); });
+    mdMatches.forEach(m=>{ 
+      const level = m[1].length; 
+      const raw = m[2].replace(/#+$/,'').replace(/&nbsp;/g,' ').replace(/\u00A0/g,' ').trim(); 
+      const id = slugify(raw); 
+      hs.push({ level, text: raw, id }); 
+    });
     // Dedupe & keep order of first appearance
     const seen = new Set();
     const unique = [];
@@ -175,8 +203,6 @@ const BlogDetails = () => {
             remarkPlugins={[remarkGfm]} 
             rehypePlugins={[rehypeRaw, rehypeHighlight]}
             components={{
-              h2: ({node, ...props}) => { const txt=String(props.children); const id=(txt?txt:'').toLowerCase().replace(/\s+/g,'-'); return <h2 id={id} {...props} />; },
-              h3: ({node, ...props}) => { const txt=String(props.children); const id=(txt?txt:'').toLowerCase().replace(/\s+/g,'-'); return <h3 id={id} {...props} />; },
               img: ({node, ...props}) => <img className="content-image" loading="lazy" {...props} />
             }}
           >
@@ -210,21 +236,6 @@ const BlogDetails = () => {
             {!isGuid(post.id) && <small style={{opacity:.7,display:'block',marginTop:8}}>Bu demo (statik) içerikte yorum gönderimi kapalı.</small>}
           </div>
         </div>
-        <aside className="blog-toc">
-          <div className="toc-box">
-            <div className="toc-title">İçindekiler</div>
-            <ul className="toc-list">
-              {headings.map(h=> (
-                <li key={h.id} style={{marginLeft: h.level>2? 8:0}}>
-                  <a href={`#${h.id}`}
-                     onClick={e=>{ e.preventDefault(); const el=document.getElementById(h.id); if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); history.replaceState(null,'',`#${h.id}`);} }}>
-                    {h.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </aside>
       </main>
     </div>
   );

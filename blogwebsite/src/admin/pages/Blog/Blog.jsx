@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPosts, deletePost } from "../../../services/api";
+import { getAdminPosts, deletePost } from "../../../services/api";
 import '../../../styles/AdminBase.css';
 
 export default function Blog() {
@@ -17,7 +17,7 @@ export default function Blog() {
   const load = async (page = 1, pageSize = 10) => {
     try {
       setLoading(true);
-      const res = await getPosts({ page, pageSize, search });
+      const res = await getAdminPosts({ page, pageSize, search });
       setData({ items: res.items ?? res.Items ?? [], total: res.total ?? res.Total ?? 0, page: res.page ?? res.Page ?? page, pageSize: res.pageSize ?? res.PageSize ?? pageSize });
     } catch (e) {
       setError(e.message || "Hata");

@@ -3,6 +3,42 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:52888";
 
+// Auth management
+export function logout() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("auth_user");
+  // Clear any other user-related data
+  localStorage.removeItem(NEWS_LS_KEY);
+  localStorage.removeItem(PENDING_OPS_KEY);
+}
+
+export function isAuthenticated() {
+  return !!localStorage.getItem("auth_token");
+}
+
+export function isTokenValid() {
+  const token = localStorage.getItem("auth_token");
+  if (!token) return false;
+  
+  try {
+    // JWT token'ın payload kısmını decode et
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    
+    // Token'ın expire olup olmadığını kontrol et
+    return payload.exp > currentTime;
+  } catch (error) {
+    // Token geçersizse false döndür
+    return false;
+  }
+}
+
+// Global handler for 401 redirects
+let authRedirectHandler = null;
+export function setAuthRedirectHandler(handler) {
+  authRedirectHandler = handler;
+}
+
 async function request(path, { method = "GET", body, token } = {}) {
   const headers = { "Content-Type": "application/json" };
   // Auto-attach JWT from localStorage if not explicitly provided
@@ -30,6 +66,14 @@ async function request(path, { method = "GET", body, token } = {}) {
   const data = contentType.includes("application/json") ? await res.json() : await res.text();
 
   if (!res.ok) {
+    // Handle 401 Unauthorized - Auto logout and redirect
+    if (res.status === 401) {
+      logout();
+      if (authRedirectHandler) {
+        authRedirectHandler("/login");
+      }
+    }
+    
     const message = typeof data === "string" ? data : data?.message || data?.Message || "Request failed";
     const statusInfo = `HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}`;
     throw new Error(`${statusInfo}: ${message}`);
@@ -46,26 +90,49 @@ export function login(userName, password) {
   });
 }
 
-export function getPosts({ page = 1, pageSize = 20, search = "", status = "" } = {}) {
+// ===== PUBLIC POSTS API (Anasayfa/Blog için) =====
+export function getPublicPosts({ page = 1, pageSize = 20, search = "", featuredOnly = false } = {}) {
+  const params = new URLSearchParams();
+  params.set("page", page);
+  params.set("pageSize", pageSize);
+  if (search) params.set("search", search);
+  if (featuredOnly) params.set("featuredOnly", "true");
+  return request(`/api/public/posts?${params.toString()}`);
+}
+
+export function getPublicPost(id) {
+  return request(`/api/public/posts/${id}`);
+}
+
+export function getFeaturedPosts({ page = 1, pageSize = 6 } = {}) {
+  return request(`/api/public/posts/featured?page=${page}&pageSize=${pageSize}`);
+}
+
+// ===== ADMIN POSTS API (Admin paneli için) =====
+export function getAdminPosts({ page = 1, pageSize = 20, search = "", status = "" } = {}) {
   const params = new URLSearchParams();
   params.set("page", page);
   params.set("pageSize", pageSize);
   if (search) params.set("search", search);
   if (status) params.set("status", status);
-  return request(`/api/posts?${params.toString()}`);
+  return request(`/api/admin/posts?${params.toString()}`);
+}
+
+export function getAdminPost(id) {
+  return request(`/api/admin/posts/${id}`);
 }
 
 export function createPost({ title, excerpt, content, coverImageUrl, status = "draft", publishedAt = null }) {
-  return request(`/api/posts`, {
+  return request(`/api/admin/posts`, {
     method: "POST",
-  body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
+    body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
   });
 }
 
 export function updatePost(id, { title, excerpt, content, coverImageUrl, status = "draft", publishedAt = null }) {
-  return request(`/api/posts/${id}`, {
+  return request(`/api/admin/posts/${id}`, {
     method: "PUT",
-  body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
+    body: { Title: title, Excerpt: excerpt, Content: content, CoverImageUrl: coverImageUrl, Status: status, PublishedAt: publishedAt },
   });
 }
 
@@ -76,7 +143,7 @@ function buildAuthHeader(){
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// Upload image (returns {url})
+// Upload image (returns {url}) with 401 handling
 export async function uploadImage(file){
   const form = new FormData();
   form.append('file', file);
@@ -85,6 +152,14 @@ export async function uploadImage(file){
     body: form,
     headers: { ...buildAuthHeader() }
   });
+  
+  if (res.status === 401) {
+    logout();
+    if (authRedirectHandler) {
+      authRedirectHandler("/login");
+    }
+  }
+  
   if(!res.ok){
     const txt = await res.text();
     throw new Error(txt || 'Upload hata');
@@ -93,11 +168,7 @@ export async function uploadImage(file){
 }
 
 export function deletePost(id) {
-  return request(`/api/posts/${id}`, { method: "DELETE" });
-}
-
-export function getPost(id) {
-  return request(`/api/posts/${id}`);
+  return request(`/api/admin/posts/${id}`, { method: "DELETE" });
 }
 
 // ----- Comments -----

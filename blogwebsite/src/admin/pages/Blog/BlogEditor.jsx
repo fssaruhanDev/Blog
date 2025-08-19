@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createPost, getPost, updatePost, uploadImage } from "../../../services/api";
+import { createPost, getAdminPost, updatePost, uploadImage } from "../../../services/api";
 import CkSuperEditor from '../../../editor/CkSuperEditor';
 import '../../../styles/Blog.css';
 import '../../../styles/AdminEditor.css';
@@ -50,7 +50,7 @@ export default function BlogEditor() {
       if (!isEdit) return;
       try {
         setLoading(true);
-        const p = await getPost(id);
+        const p = await getAdminPost(id);
   if (typeof window !== 'undefined') console.debug('GetPost response', p);
         setTitle(p.title || p.Title || "");
         setExcerpt(p.excerpt || p.Excerpt || "");
@@ -94,7 +94,7 @@ export default function BlogEditor() {
       if (isEdit) {
         await updatePost(id, payload);
         // reload to ensure we reflect server state
-        try { const fresh = await getPost(id); setCoverImageUrl(fresh.coverImageUrl || fresh.CoverImageUrl || ''); } catch { /* ignore */ }
+        try { const fresh = await getAdminPost(id); setCoverImageUrl(fresh.coverImageUrl || fresh.CoverImageUrl || ''); } catch { /* ignore */ }
       } else {
         const created = await createPost(payload);
         // yeni oluşturulduysa URL değiştirmeden form üzerinde kalıyoruz

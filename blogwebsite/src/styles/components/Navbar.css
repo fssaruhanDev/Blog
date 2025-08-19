@@ -1,0 +1,332 @@
+/* ================================================== */
+/* NAVBAR COMPONENT STYLES - CLEAN & OPTIMIZED */
+/* ================================================== */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1100;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(120%) !important;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: none;
+  will-change: background, box-shadow;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.navbar.scrolled {
+  background: linear-gradient(90deg, rgba(247, 109, 85, 0.9) 0%, rgba(248, 154, 136, 0.9) 100%) !important;
+  backdrop-filter: blur(25px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ================================================== */
+/* NAVBAR LAYOUT - OPTIMIZED */
+/* ================================================== */
+
+.navbar-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  contain: layout style;
+}
+
+.navbar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  width: 100%;
+  min-height: 64px;
+  padding: 0 !important;
+}
+
+/* Logo ve Navigation yan yana */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 3rem; /* Logo ile navigation arası boşluk */
+}
+
+.navbar-logo img {
+  height: 36px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.navbar-logo:hover img {
+  transform: scale(1.05);
+}
+
+/* ================================================== */
+/* NAVIGATION LINKS - LOGO YANINDA */
+/* ================================================== */
+
+.navbar-nav {
+  display: flex !important; /* Force flex display */
+  align-items: center;
+  gap: 2rem; /* Menüler arası boşluk */
+  contain: layout style;
+}
+
+/* Desktop'ta kesinlikle göster */
+@media (min-width: 992px) {
+  .navbar-nav {
+    display: flex !important;
+  }
+}
+
+/* Navigation Button Styling */
+.navbar-nav .MuiButton-root {
+  color: #ffffff !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  padding: 8px 16px !important;
+  text-transform: uppercase !important;
+  border-radius: 4px !important;
+  min-width: auto !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.navbar-nav .MuiButton-root:hover {
+  background-color: rgba(255,255,255,0.1) !important;
+}
+
+/* Active Navigation State */
+.navbar-nav .MuiButton-root.active {
+  position: relative;
+}
+
+.navbar-nav .MuiButton-root.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 1px;
+}
+
+@media (max-width: 991px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+  
+  .navbar-logo {
+    margin-right: 1rem; /* Mobile'da daha az boşluk */
+  }
+  
+  .navbar-nav {
+    display: none;
+  }
+  
+  .navbar-actions .MuiButton-outlined {
+    display: none !important;
+  }
+  
+  .navbar-actions .MuiIconButton-root:not([class*="mobile-toggle"]) {
+    display: none !important;
+  }
+}
+
+/* ================================================== */
+/* USER ACTIONS SECTION - STABLE */
+/* ================================================== */
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  min-width: fit-content;
+}
+
+/* Login Button Styling */
+.navbar-actions .MuiButton-outlined {
+  color: #fff !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  padding: 8px 24px !important;
+  border-radius: 6px !important;
+  min-width: auto !important;
+  white-space: nowrap !important;
+}
+
+.navbar-actions .MuiButton-outlined:hover {
+  border-color: #fff !important;
+  background-color: rgba(255,255,255,0.1) !important;
+}
+
+/* User Menu Styling */
+.navbar-user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-avatar-btn {
+  padding: 0 !important;
+}
+
+.navbar-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: rgba(255,255,255,0.15) !important;
+  color: #fff !important;
+  font-size: 1rem !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.navbar-avatar:hover {
+  background-color: rgba(255,255,255,0.25) !important;
+  transform: scale(1.05);
+}
+
+/* Dropdown Menu Styling */
+.navbar-dropdown .MuiPaper-root {
+  min-width: 180px !important;
+  margin-top: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+}
+
+.navbar-dropdown-item {
+  font-size: 0.875rem !important;
+  padding: 12px 16px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.navbar-dropdown-item:hover {
+  background-color: rgba(247,109,85,0.08) !important;
+}
+
+.navbar-dropdown-item.logout {
+  color: #d32f2f !important;
+}
+
+.navbar-dropdown-item.logout:hover {
+  background-color: rgba(211,47,47,0.08) !important;
+}
+
+/* Mobile Toggle Button */
+.navbar-mobile-toggle {
+  color: #fff !important;
+  padding: 8px !important;
+  display: none !important;
+}
+
+/* Mobile'da toggle göster */
+@media (max-width: 991px) {
+  .navbar-mobile-toggle {
+    display: flex !important;
+  }
+}
+
+/* ================================================== */
+/* MOBILE MENU - PERFORMANCE OPTIMIZED */
+/* ================================================== */
+
+/* Mobile Menu Items */
+.navbar-mobile-item {
+  color: #fff !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.2px !important;
+  text-transform: uppercase !important;
+  padding: 12px 16px !important;
+  border-radius: 6px !important;
+  justify-content: flex-start !important;
+  margin-bottom: 4px !important;
+  width: 100% !important;
+}
+
+.navbar-mobile-item:hover {
+  background-color: rgba(255,255,255,0.1) !important;
+}
+
+.navbar-mobile-divider {
+  background-color: rgba(255,255,255,0.1) !important;
+  margin: 8px 0 !important;
+}
+
+@media (min-width: 992px) {
+  .navbar-mobile-toggle {
+    display: none !important;
+  }
+  
+  .navbar-mobile-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-container {
+    padding: 0 0.75rem;
+  }
+  
+  .navbar-logo img {
+    height: 32px;
+  }
+}
+
+/* ================================================== */
+/* PERFORMANCE ENHANCEMENTS */
+/* ================================================== */
+
+/* Prevent layout shifts */
+.navbar * {
+  box-sizing: border-box;
+}
+
+/* GPU acceleration for smooth animations */
+.navbar,
+.navbar-logo img,
+.navbar .MuiButton-root {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce repaints */
+.navbar .MuiButton-root {
+  contain: layout style;
+  will-change: background-color, transform;
+}
+
+/* Stable menu positioning */
+.navbar .MuiMenu-root {
+  will-change: opacity, transform;
+}
+
+/* ================================================== */
+/* MATERIAL-UI OVERRIDES - MINIMAL */
+/* ================================================== */
+
+.navbar .MuiToolbar-root {
+  padding: 0 !important;
+  min-height: 64px !important;
+}
+
+.navbar .MuiButton-root {
+  text-transform: none !important;
+}
+
+.navbar .MuiIconButton-root {
+  padding: 8px !important;
+}

@@ -54,12 +54,12 @@ export default function BlogCard({ post }) {
           variant="contained"
           sx={{
             mt:2,
-            background: 'var(--brand-primary)',
+            background: '#dc4444',
             textTransform:'none',
             fontWeight:600,
             letterSpacing:.2,
-            boxShadow:'0 4px 12px -4px rgba(0,0,0,0.25)',
-            '&:hover':{ background:'var(--brand-primary)', filter:'brightness(1.07)', boxShadow:'0 6px 18px -6px rgba(0,0,0,0.4)' }
+            boxShadow:'0 4px 12px -4px rgba(220,68,68,0.4)',
+            '&:hover':{ background:'#c53030', filter:'brightness(1.07)', boxShadow:'0 6px 18px -6px rgba(220,68,68,0.5)' }
           }}
           onClick={() => navigate(`/blog/${post.id}`)}
         >

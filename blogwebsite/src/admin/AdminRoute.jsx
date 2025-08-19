@@ -1,7 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { isAuthenticated } from "../services/api";
 
 export default function AdminRoute() {
-  const token = localStorage.getItem("auth_token");
-  if (!token) return <Navigate to="/login" replace />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
   return <Outlet />;
 }
