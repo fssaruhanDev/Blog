@@ -3,6 +3,7 @@ using Blog.Common.Models.Queries.News;
 using Blog.Common.Models.RequestModels.News;
 using MediatR;
 using Microsoft.EntityFrameworkCore; // AnyAsync
+using Blog.Common.Infrastructure.Exeptions;
 using DomainNews = Blog.Api.Domain.Models.News;
 
 namespace Blog.Api.Application.Features.Commands.News.Create
@@ -19,7 +20,7 @@ namespace Blog.Api.Application.Features.Commands.News.Create
         {
             // Basit alan validasyonu
             if (string.IsNullOrWhiteSpace(request.Title))
-                throw new ArgumentException("Title gereklidir");
+                throw new BadRequestException("Title is required");
 
             // SourceUrl varsa duplication'ı DB exception'a düşmeden önce kontrol et
             if (!string.IsNullOrWhiteSpace(request.SourceUrl))
@@ -29,13 +30,13 @@ namespace Blog.Api.Application.Features.Commands.News.Create
                 var exists = await _repo.AsQueryable()
                     .AnyAsync(n => !n.isDeleted && n.SourceUrl != null && n.SourceUrl == normalized, cancellationToken);
                 if (exists)
-                    throw new InvalidOperationException("Bu SourceUrl zaten eklenmiş.");
+                    throw new BadRequestException("This SourceUrl is already added.");
                 request.SourceUrl = normalized; // normalize edilmiş halini kaydet
             }
 
             var entity = new DomainNews
             {
-                ID = Guid.NewGuid(),
+                ID = Blog.Common.Helpers.UlidHelper.NewGuid(),
                 Title = request.Title.Trim(),
                 Summary = request.Summary,
                 SourceName = request.SourceName,

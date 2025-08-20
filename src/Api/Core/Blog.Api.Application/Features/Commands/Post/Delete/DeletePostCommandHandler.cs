@@ -3,6 +3,7 @@ using Blog.Common.Models.RequestModels.Post;
 using MediatR;
 using DomainPost = Blog.Api.Domain.Models.Post;
 using Microsoft.AspNetCore.Http;
+using Blog.Common.Infrastructure.Exeptions;
 using Blog.Common.Infrastructure;
 
 namespace Blog.Api.Application.Features.Commands.Post.Delete
@@ -21,7 +22,7 @@ namespace Blog.Api.Application.Features.Commands.Post.Delete
             if (!UserContextHelper.TryGetUserId(_http, out var userId))
                 throw new UnauthorizedAccessException();
 
-            var entity = await _repo.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException("Post not found");
+            var entity = await _repo.GetByIdAsync(request.Id) ?? throw new NotFoundException("Post not found");
             if (entity.AuthorId != userId) throw new UnauthorizedAccessException();
 
             await _repo.DeleteAsync(entity);

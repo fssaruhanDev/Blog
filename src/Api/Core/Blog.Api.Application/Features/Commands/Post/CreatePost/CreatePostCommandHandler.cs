@@ -5,6 +5,7 @@ using Blog.Common.Models.Queries.Post;
 using Blog.Api.Application.Features.Commands.Post.CreatePost;
 using MediatR;
 using System;
+using Blog.Common.Infrastructure.Exeptions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,12 +38,12 @@ namespace Blog.Api.Application.Features.Commands.Post.CreatePost
             if (!isTitleUnique)
             {
                 _loggerService.LogWarning("Post creation failed: Title already exists.", logProps);
-                throw new InvalidOperationException("A post with this title already exists.");
+                throw new BadRequestException("A post with this title already exists.");
             }
 
             var post = new Blog.Api.Domain.Models.Post
             {
-                ID = Guid.NewGuid(),
+                ID = Blog.Common.Helpers.UlidHelper.NewGuid(),
                 AuthorId = request.AuthorId,
                 Title = request.Title,
                 Excerpt = request.Excerpt,

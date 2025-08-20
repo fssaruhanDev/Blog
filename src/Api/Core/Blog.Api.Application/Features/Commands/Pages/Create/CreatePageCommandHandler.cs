@@ -2,6 +2,7 @@ using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.RequestModels.Pages;
 using Blog.Common.Models.Queries.Pages;
 using MediatR;
+using Blog.Common.Infrastructure.Exeptions;
 using DomainPage = Blog.Api.Domain.Models.Page;
 
 namespace Blog.Api.Application.Features.Commands.Pages.Create
@@ -14,13 +15,13 @@ namespace Blog.Api.Application.Features.Commands.Pages.Create
 
         public async Task<PageListItemViewModel> Handle(CreatePageCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.Title)) throw new ArgumentException("Title required");
+            if (string.IsNullOrWhiteSpace(request.Title)) throw new BadRequestException("Title required");
             if (string.IsNullOrWhiteSpace(request.Slug))
                 request.Slug = request.Title.ToLower().Replace(' ', '-');
 
             var entity = new DomainPage
             {
-                ID = Guid.NewGuid(),
+                ID = Blog.Common.Helpers.UlidHelper.NewGuid(),
                 Slug = request.Slug.Trim(),
                 Title = request.Title.Trim(),
                 Excerpt = request.Excerpt,

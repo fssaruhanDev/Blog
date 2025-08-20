@@ -4,6 +4,7 @@ using MediatR;
 using DomainPost = Blog.Api.Domain.Models.Post;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Features.Queries.Post.GetPostById
 {
@@ -16,7 +17,7 @@ namespace Blog.Api.Application.Features.Queries.Post.GetPostById
 
         public async Task<PostDetailViewModel> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
-            var p = await _repo.GetByIdAsync(request.Id) ?? throw new KeyNotFoundException();
+            var p = await _repo.GetByIdAsync(request.Id) ?? throw new NotFoundException("Post not found");
             var baseUrl = _http.HttpContext != null ? $"{_http.HttpContext.Request.Scheme}://{_http.HttpContext.Request.Host}" : string.Empty;
             return new PostDetailViewModel
             {

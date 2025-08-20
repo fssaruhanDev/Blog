@@ -4,6 +4,7 @@ using Blog.Common.Models.Queries.News;
 using Blog.Api.Application.Features.Commands.News.UpdateNews;
 using MediatR;
 using System;
+using Blog.Common.Infrastructure.Exeptions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,18 +36,18 @@ namespace Blog.Api.Application.Features.Commands.News.UpdateNews
             if (news == null)
             {
                 _loggerService.LogWarning("News update failed: News not found.", logProps);
-                throw new InvalidOperationException("News not found.");
+                throw new NotFoundException("News not found.");
             }
 
             // Check if title is unique (exclude current news)
             if (news.Title != request.Title)
             {
                 var isTitleUnique = await _newsRepository.IsTitleUniqueAsync(request.Title, request.Id);
-                if (!isTitleUnique)
-                {
-                    _loggerService.LogWarning("News update failed: Title already exists.", logProps);
-                    throw new InvalidOperationException("A news with this title already exists.");
-                }
+                    if (!isTitleUnique)
+                    {
+                        _loggerService.LogWarning("News update failed: Title already exists.", logProps);
+                        throw new BadRequestException("A news with this title already exists.");
+                    }
             }
 
             // Update properties

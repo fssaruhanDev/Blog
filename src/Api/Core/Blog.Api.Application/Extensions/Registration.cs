@@ -18,6 +18,8 @@ public static class Registration
         services.AddMediatR(assm);
         services.AddAutoMapper(assm);
         services.AddValidatorsFromAssembly(assm);
+    // Add MediatR pipeline behaviors
+    services.AddTransient(typeof(MediatR.IPipelineBehavior<,>), typeof(Blog.Api.Application.Behaviors.ValidationBehavior<,>));
 
 
 

@@ -55,15 +55,10 @@ namespace Blog.Api.Application.Features.Queries.News.GetNews
             }
             else
             {
-                // Get all with pagination using generic repository
-                items = await _newsRepository.GetList(
-                    predicate: n => !n.isDeleted,
-                    noTracking: true,
-                    orderBy: q => q.OrderByDescending(n => n.PublishedAt ?? n.CreatedDate)
-                );
-                
-                // Manual pagination for complex query
-                items = items.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                // Build query and perform pagination at DB level
+                var query = _newsRepository.AsQueryable().Where(n => !n.isDeleted);
+                query = query.OrderByDescending(n => n.PublishedAt ?? n.CreatedDate);
+                items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
             }
 
             // Get total count for pagination

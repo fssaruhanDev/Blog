@@ -3,6 +3,7 @@ using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Api.Application.Features.Commands.News.DeleteNews;
 using MediatR;
 using System;
+using Blog.Common.Infrastructure.Exeptions;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Blog.Api.Application.Features.Commands.News.DeleteNews
             if (news == null)
             {
                 _loggerService.LogWarning("News deletion failed: News not found.", logProps);
-                throw new InvalidOperationException("News not found.");
+                throw new NotFoundException("News not found.");
             }
 
             await _newsRepository.DeleteAsync(news);

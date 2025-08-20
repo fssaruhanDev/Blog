@@ -63,23 +63,11 @@ namespace Blog.Api.WebApi.Controllers.News
 
         // Admin create
     [HttpPost]
-    [Authorize] // TODO: Eğer test için anonime açmak isterseniz geçici olarak [AllowAnonymous] ekleyin
+    [Authorize]
         public async Task<ActionResult<NewsDetailViewModel>> Create([FromBody] CreateNewsCommand command)
         {
-            try
-            {
-                var created = await _mediator.Send(command);
-                // Invalidate list cache (simple approach: clear all keys via prefix not directly supported; rely on short TTL)
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (InvalidOperationException dupEx)
-            {
-                return Conflict(new { message = dupEx.Message });
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is SqlException sql && sql.Number == 2601 || ex.InnerException is SqlException sql2 && sql2.Number == 2627)
-            {
-                return Conflict(new { message = "Bu SourceUrl zaten eklenmiş." });
-            }
+            var created = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         // Admin update
@@ -88,19 +76,8 @@ namespace Blog.Api.WebApi.Controllers.News
         public async Task<ActionResult<NewsDetailViewModel>> Update(Guid id, [FromBody] UpdateNewsCommand command)
         {
             if (id != command.Id) return BadRequest("ID uyuşmuyor");
-            try
-            {
-                var updated = await _mediator.Send(command);
-                return Ok(updated);
-            }
-            catch (InvalidOperationException dupEx)
-            {
-                return Conflict(new { message = dupEx.Message });
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is SqlException sql && (sql.Number == 2601 || sql.Number == 2627))
-            {
-                return Conflict(new { message = "Bu SourceUrl zaten eklenmiş." });
-            }
+            var updated = await _mediator.Send(command);
+            return Ok(updated);
         }
 
         // Admin delete (soft)

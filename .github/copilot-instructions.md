@@ -60,9 +60,67 @@ To run the frontend development server:
 
 The frontend will connect to the backend API defined in `blogwebsite/.env`. Ensure the `VITE_API_BASE_URL` is correct.
 
-## Project-Specific Conventions
+````instructions
+# AI Assistant Onboarding Guide for the Blog Project
 
--   **API Communication**: All frontend-to-backend communication should go through the service layer defined in `blogwebsite/src/services/api.js`.
--   **Styling**: The project uses a mix of global CSS (`App.css`, `index.css`) and component-specific CSS files (e.g., `Navbar.css`).
--   **Routing**: Frontend routing is likely handled by a library like React Router. The route definitions can be found in `blogwebsite/src/constants/routes.js`.
--   **State Management**: Simple state is managed with React hooks. For more complex state, a state management library might be used.
+This file contains focused, actionable guidance for AI coding agents to be immediately productive in this repository.
+
+## Big picture (what matters)
+- Monorepo with two primary apps: backend (.NET 9 solution under `src/`) and frontend (React + Vite under `blogwebsite/`).
+- Backend follows a clean-architecture layout: `Blog.Api.WebApi` (HTTP entry), `Blog.Api.Application` (business logic), `Blog.Api.Domain` (entities/models), and `Blog.Infrastructure.*` (persistence, security, utilities).
+- Frontend is a Vite React SPA. Communication with backend occurs through `blogwebsite/src/services/api.js` and `VITE_API_BASE_URL` in the frontend `.env`.
+
+## Quick-start developer workflows (explicit commands)
+- Build entire solution:
+	- `dotnet build Blog.sln`
+- Run backend (development):
+	- `dotnet run --project src/Api/WebAPI/Blog.Api.WebApi/Blog.Api.WebApi.csproj`
+- Run frontend (development):
+	- `cd blogwebsite; npm install; npm run dev`
+- EF Core migrations (project-specific paths):
+	- `dotnet ef migrations add <Name> --project src/Api/Infrastructure/Blog.Infrastructure.Persistence/Blog.Infrastructure.Persistence.csproj --startup-project src/Api/WebAPI/Blog.Api.WebApi/Blog.Api.WebApi.csproj`
+	- `dotnet ef database update --project src/Api/Infrastructure/Blog.Infrastructure.Persistence/Blog.Infrastructure.Persistence.csproj --startup-project src/Api/WebAPI/Blog.Api.WebApi/Blog.Api.WebApi.csproj`
+
+## Important project-specific patterns & conventions
+- Dependency-registration is modularized via extension methods called from `src/Api/WebAPI/Blog.Api.WebApi/Program.cs`. Look for `Add*Registration` methods across `Blog.Infrastructure.*` and `Blog.Api.Application`.
+- Persistence:
+	- `EntityContext` lives at `src/Api/Infrastructure/Blog.Infrastructure.Persistence/Context/EntityContext.cs` and centralizes DbSets and EF configuration.
+	- The codebase uses interceptors (e.g., `AuditLogInterceptor`, `SavingChangesInterceptor`) added to the DbContext — check `EntityContext.OnConfiguring`.
+	- Design-time factory pattern is used/expected for dotnet-ef tools: add `IDesignTimeDbContextFactory<EntityContext>` in the same persistence project to avoid hardcoded credentials.
+- Configuration/secrets:
+	- Connection strings should be provided via configuration keys found in `appsettings*.json` or environment variables. The repository uses the env-var naming convention `ConnectionStrings__ConnectionString` (note `__` for `:` in environment variables).
+	- Frontend expects `VITE_API_BASE_URL` in `blogwebsite/.env`.
+- Logs: Server logs (when configured) write to `src/Api/WebAPI/Blog.Api.WebApi/logs/` — check there for runtime issues.
+
+## Integration points & cross-component data flows
+- Frontend -> Backend: `blogwebsite/src/services/api.js` calls backend endpoints defined by controllers in `Blog.Api.WebApi`.
+- Domain models defined in `Blog.Api.Domain` are mapped to persistence via configurations in `Blog.Infrastructure.Persistence/EntityConfigurations` and applied with `modelBuilder.ApplyConfigurationsFromAssembly(...)` in `EntityContext`.
+- Authentication: JWT and security registration live in `Blog.Infrastructure.Security` and are wired into `Program.cs` via extension methods.
+
+## Files to open first when debugging or implementing features
+- `src/Api/WebAPI/Blog.Api.WebApi/Program.cs` — application startup and service registrations.
+- `src/Api/Infrastructure/Blog.Infrastructure.Persistence/Context/EntityContext.cs` — DbSets, interceptors, OnConfiguring/OnModelCreating.
+- `src/Api/Infrastructure/Blog.Infrastructure.Persistence/Extensions/Registration.cs` — AddDbContext wiring and configuration key names.
+- `blogwebsite/src/services/api.js` and `blogwebsite/.env` — where frontend calls are defined and base URL configured.
+
+## Examples and gotchas discovered in the codebase
+- There was a hardcoded fallback connection string in `EntityContext.OnConfiguring` (search `Server=FSSARUHAN`), which is a security risk — prefer environment variables or `IDesignTimeDbContextFactory` for design-time.
+- Migrations live in the persistence project under `src/Api/Infrastructure/Blog.Infrastructure.Persistence/Migrations/`. Logs have shown `PendingModelChangesWarning` in prior runs — ensure you create/apply migrations after model changes.
+- Many registrations use extension methods (e.g., `AddApplicationRegistration`, `AddInfrastructureRegistration`); when adding new services follow the same pattern and keep scopes consistent (DbContext => scoped).
+
+## Minimal checklist for common agent tasks
+- Fix a backend bug that touches DB models:
+	1. Update model/configuration in `Blog.Api.Domain` or `Blog.Infrastructure.Persistence/EntityConfigurations`.
+ 2. Add an EF migration using the dotnet-ef commands above (use design-time factory or set `ConnectionStrings__ConnectionString`).
+ 3. Run `dotnet ef database update` or generate SQL script for DB team.
+- Expose a new API endpoint:
+	1. Add controller under `src/Api/WebAPI/Blog.Api.WebApi/Controllers`.
+ 2. Add DTO/command in `Blog.Api.Application` and wire dependency registrations via the extension pattern.
+
+## Limitations & where to ask for clarification
+- Tests: there are few/no automated backend tests discoverable in the repo root; expect to run manual verification. If you need a testing convention, ask the repo owner.
+- Secrets/CI: the repo assumes local environment variables or user-secrets for development. For CI or production, ask where secrets are stored (Key Vault or environment).
+
+If anything here is unclear or you want this translated/localized, tell me which sections to expand or clarify.
+
+````

@@ -1,6 +1,7 @@
 using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.Queries.Tag;
 using MediatR;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Queries.Tag.GetTag;
 
@@ -19,7 +20,7 @@ public class GetTagHandler : IRequestHandler<GetTagQuery, TagViewModel>
         
         if (tag == null)
         {
-            throw new InvalidOperationException("Tag not found");
+            throw new NotFoundException("Tag not found");
         }
 
         return new TagViewModel

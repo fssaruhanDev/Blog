@@ -1,4 +1,5 @@
 ﻿
+#nullable enable
 using Blog.Api.Application.Interfaces.Infrastructure.Utility.Logger;
 using Serilog.Events;
 using System;

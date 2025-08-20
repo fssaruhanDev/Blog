@@ -6,6 +6,7 @@ using Blog.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Blog.Common.Infrastructure.Exeptions;
 using System.Text;
 using Serilog;
 using Blog.Infrastructure.Utilities.Logger.Services;
@@ -55,7 +56,7 @@ builder.Services.AddSwaggerGen(opt =>
         }
     });
 });
-var jwtSecurityKey = builder.Configuration["Token:SecurityKey"] ?? throw new InvalidOperationException("Token:SecurityKey configuration is missing");
+var jwtSecurityKey = builder.Configuration["Token:SecurityKey"] ?? throw new ApiException("Token:SecurityKey configuration is missing", 500, "Configuration Error", "https://example.com/probs/configuration");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters

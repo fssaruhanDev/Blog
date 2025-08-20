@@ -1,6 +1,7 @@
 using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.Queries.Category;
 using MediatR;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Queries.Category.GetCategory;
 
@@ -19,7 +20,7 @@ public class GetCategoryHandler : IRequestHandler<GetCategoryQuery, CategoryView
         
         if (category == null)
         {
-            throw new InvalidOperationException("Category not found");
+            throw new NotFoundException("Category not found");
         }
 
         var allCategories = await _categoryRepository.GetAll();

@@ -54,18 +54,20 @@ namespace Blog.Infrastructure.Persistence.Repository
             return !await query.AnyAsync();
         }
 
-        public async Task<List<News>> SearchNewsAsync(string searchTerm, int page = 1, int pageSize = 10)
-        {
-            return await Get(n => n.Status == "published" && 
-                                 n.PublishedAt <= DateTime.UtcNow &&
-                                 (n.Title.Contains(searchTerm) || 
-                                  n.Summary.Contains(searchTerm) || 
-                                  n.Tags.Contains(searchTerm)))
-                .OrderByDescending(n => n.PublishedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-        }
+    public async Task<List<News>> SearchNewsAsync(string searchTerm, int page = 1, int pageSize = 10)
+    {
+        // Ensure null-safe checks for Summary and Tags
+        searchTerm = searchTerm ?? string.Empty;
+        return await Get(n => n.Status == "published" &&
+                 n.PublishedAt <= DateTime.UtcNow &&
+                 (n.Title.Contains(searchTerm) ||
+                  (n.Summary ?? "").Contains(searchTerm) ||
+                  (n.Tags ?? "").Contains(searchTerm)))
+        .OrderByDescending(n => n.PublishedAt)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
+    }
 
         public async Task<List<News>> GetRecentNewsAsync(int count = 5)
         {

@@ -24,6 +24,8 @@ namespace Blog.Common.Models.RequestModels.Project
         public int Order { get; set; } = 0;
         public Guid? CategoryId { get; set; }
         public List<Guid>? TagIds { get; set; }
+    // Allow frontend to send new tag names
+    public List<string>? NewTags { get; set; }
     }
 
     public class UpdateProjectRequest : CreateProjectRequest

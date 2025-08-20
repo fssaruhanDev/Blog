@@ -17,7 +17,7 @@ public class CreateTagHandler : IRequestHandler<CreateTagCommand, CreateTagModel
     {
         var tag = new Blog.Api.Domain.Models.Tag
         {
-            ID = Guid.NewGuid(),
+            ID = Blog.Common.Helpers.UlidHelper.NewGuid(),
             Name = request.Name,
             Description = request.Description,
             ContentType = request.ContentType,

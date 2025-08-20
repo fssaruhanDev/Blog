@@ -26,7 +26,11 @@ public class SavingChangesInterceptor : SaveChangesInterceptor
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        var entries = eventData.Context.ChangeTracker.Entries().ToList();
+        var context = eventData.Context;
+        if (context == null)
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+
+        var entries = context.ChangeTracker.Entries().ToList();
         var userId = _httpContextAccessor.HttpContext?.Items["UserId"]?.ToString();
 
         foreach (var item in entries.Where(i => i.State == EntityState.Added || i.State == EntityState.Modified))

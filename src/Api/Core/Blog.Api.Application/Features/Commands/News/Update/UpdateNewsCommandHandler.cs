@@ -4,6 +4,7 @@ using Blog.Common.Models.RequestModels.News;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using DomainNews = Blog.Api.Domain.Models.News;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Features.Commands.News.Update
 {
@@ -19,7 +20,7 @@ namespace Blog.Api.Application.Features.Commands.News.Update
         {
             var entity = await _repo.AsQueryable().FirstOrDefaultAsync(x => x.ID == request.Id, cancellationToken);
             if (entity == null)
-                throw new KeyNotFoundException("News bulunamadı");
+                throw new NotFoundException("News not found");
 
             // Alan güncellemeleri
             if (!string.IsNullOrWhiteSpace(request.Title))
@@ -39,7 +40,7 @@ namespace Blog.Api.Application.Features.Commands.News.Update
                         var exists = await _repo.AsQueryable()
                             .AnyAsync(n => !n.isDeleted && n.SourceUrl != null && n.SourceUrl == normalized && n.ID != entity.ID, cancellationToken);
                         if (exists)
-                            throw new InvalidOperationException("Bu SourceUrl zaten eklenmiş.");
+                            throw new Blog.Common.Infrastructure.Exeptions.BadRequestException("This SourceUrl is already added.");
                         entity.SourceUrl = normalized;
                     }
                 }

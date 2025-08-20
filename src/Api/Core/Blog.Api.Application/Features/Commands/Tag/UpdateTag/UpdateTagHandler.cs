@@ -1,6 +1,7 @@
 using Blog.Api.Domain.Interfaces.Repositories;
 using Blog.Common.Models.Event.Tag;
 using MediatR;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Commands.Tag.UpdateTag;
 
@@ -19,7 +20,7 @@ public class UpdateTagHandler : IRequestHandler<UpdateTagCommand, UpdateTagModel
         
         if (tag == null)
         {
-            throw new InvalidOperationException("Tag not found");
+            throw new NotFoundException("Tag not found");
         }
 
         tag.Name = request.Name;

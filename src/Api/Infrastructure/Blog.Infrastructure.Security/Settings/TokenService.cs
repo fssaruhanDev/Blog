@@ -1,6 +1,7 @@
 ﻿using Blog.Api.Application.Interfaces.infractucture.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Blog.Common.Infrastructure.Exeptions;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,7 +21,7 @@ public class TokenService : IJwtProvider
 
     public string GenerateToken(Claim[] claims, DateTime expiresAt)
     {
-    var securityKey = configuration["Token:SecurityKey"] ?? throw new InvalidOperationException("Token:SecurityKey is not configured.");
+    var securityKey = configuration["Token:SecurityKey"] ?? throw new ApiException("Token:SecurityKey is not configured.", 500, "Configuration Error", "https://example.com/probs/configuration");
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(claims: claims,

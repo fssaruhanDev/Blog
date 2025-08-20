@@ -36,12 +36,12 @@ namespace Blog.Api.Application.Features.Commands.News.CreateNews
             if (!isTitleUnique)
             {
                 _loggerService.LogWarning("News creation failed: Title already exists.", logProps);
-                throw new InvalidOperationException("A news with this title already exists.");
+                throw new Blog.Common.Infrastructure.Exeptions.BadRequestException("A news with this title already exists.");
             }
 
             var news = new Blog.Api.Domain.Models.News
             {
-                ID = Guid.NewGuid(),
+                ID = Blog.Common.Helpers.UlidHelper.NewGuid(),
                 Title = request.Title,
                 Summary = request.Summary,
                 SourceName = request.SourceName,

@@ -28,15 +28,15 @@ namespace Blog.Api.Domain.Interfaces.Repositories
 
         Task<List<T>> GetAll(bool noTracking = true);
 
-        Task<List<T>> GetList(Expression<Func<T, bool>> predicate, bool noTracking = true, Func<IQueryable<T>,IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object>>[] includes);
+    Task<List<T>> GetList(Expression<Func<T, bool>> predicate, bool noTracking = true, Func<IQueryable<T>,IOrderedQueryable<T>>? orderBy = null, params Expression<Func<T, object?>>[] includes);
 
-        Task<T> GetByIdAsync(Guid id, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+    Task<T?> GetByIdAsync(Guid id, bool noTracking = true, params Expression<Func<T, object?>>[] includes);
 
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+    Task<T?> GetSingleAsync(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object?>>[] includes);
 
-        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+    Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object?>>[] includes);
 
-        IQueryable<T> Get(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object>>[] includes);
+    IQueryable<T> Get(Expression<Func<T, bool>> predicate, bool noTracking = true, params Expression<Func<T, object?>>[] includes);
 
         Task BulkDeleteById(IEnumerable<Guid> ids);
 

@@ -8,13 +8,17 @@ using Blog.Api.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace ECommerce.Infrastructure.Persistence.EntityConfigurations.Interceptors;
+namespace Blog.Infrastructure.Persistence.EntityConfigurations.Interceptors;
 
 public class AuditLogInterceptor : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        var entries = eventData.Context.ChangeTracker.Entries().ToList();
+        var context = eventData.Context;
+        if (context == null)
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+
+        var entries = context.ChangeTracker.Entries().ToList();
 
         var auditLogs = entries
                         .Where(i => i.Entity is not AuditLogEntity)
@@ -25,9 +29,10 @@ public class AuditLogInterceptor : SaveChangesInterceptor
         var auditLogEntities = new List<AuditLogEntity>();
         foreach (var entry in auditLogs)
         {
+            var tableName = entry.Metadata.GetTableName() ?? entry.Metadata.Name;
             var log = new AuditLogEntity()
             {
-                TableName = entry.Metadata.GetTableName(),
+                TableName = tableName,
                 Operation = entry.State.ToString(),
                 CreatedDate = DateTime.UtcNow,
             };
@@ -65,7 +70,10 @@ public class AuditLogInterceptor : SaveChangesInterceptor
 
         }
 
-        eventData.Context.Set<AuditLogEntity>().AddRange(auditLogEntities);
+        if (context != null)
+        {
+            context.Set<AuditLogEntity>().AddRange(auditLogEntities);
+        }
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }

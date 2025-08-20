@@ -1,5 +1,6 @@
 using Blog.Api.Domain.Interfaces.Repositories;
 using MediatR;
+using Blog.Common.Infrastructure.Exeptions;
 
 namespace Blog.Api.Application.Commands.Tag.DeleteTag;
 
@@ -18,7 +19,7 @@ public class DeleteTagHandler : IRequestHandler<DeleteTagCommand>
         
         if (tag == null)
         {
-            throw new InvalidOperationException("Tag not found");
+            throw new NotFoundException("Tag not found");
         }
 
         // Check if tag has related projects (unless force delete)
